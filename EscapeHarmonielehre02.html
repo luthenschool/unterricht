@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Der verschlossene Konzertsaal – Harmonik-Escape</title>
+<style>
+  :root{
+    --bg:#160f1f; --bg2:#241634; --panel:#1d1330;
+    --brass:#d9b24c; --brass-lo:#a9832f; --brass-hi:#f4dd8f;
+    --parch:#efe6d0; --parch-lo:#e2d5b6; --ink:#2c2419; --ink-soft:#5c5140;
+    --t:#5b8def; --s:#22b0a0; --d:#e0525f;
+    --ok:#3fae6b; --bad:#d6604d;
+    --wkw:min(8.6vw,44px); --bkw:calc(var(--wkw)*0.62);
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--sans); color:#efe9dd; background:var(--bg);
+    background-image:
+      radial-gradient(1200px 600px at 50% -8%, rgba(217,178,76,.16), transparent 60%),
+      radial-gradient(900px 700px at 50% 120%, rgba(91,141,239,.10), transparent 60%),
+      linear-gradient(180deg,#160f1f 0%,#1b1128 55%,#150e1e 100%);
+    background-attachment:fixed;
+    min-height:100vh; line-height:1.5;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:22px 18px 60px}
+  .eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--brass);
+    font-weight:700;margin:0 0 10px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
+  a{color:var(--brass-hi)}
+
+  /* ---------- HERO / START ---------- */
+  .hero{position:relative;text-align:center;padding:26px 10px 6px}
+  .door{width:190px;height:238px;margin:6px auto 20px;position:relative;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55))}
+  .door .leaf{position:absolute;top:0;bottom:0;width:50%;
+    background:linear-gradient(180deg,#3a2a1c,#241a12);
+    border:2px solid #4b3720}
+  .door .leaf.l{left:0;border-right:1px solid #120c08;border-radius:8px 0 0 8px}
+  .door .leaf.r{right:0;border-left:1px solid #120c08;border-radius:0 8px 8px 0}
+  .door .panel{position:absolute;left:14%;right:14%;border:1.5px solid rgba(217,178,76,.32);border-radius:4px}
+  .door .p1{top:9%;height:34%}.door .p2{top:50%;height:40%}
+  .seal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:74px;height:74px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,var(--brass-hi),var(--brass) 45%,var(--brass-lo));
+    box-shadow:0 0 0 4px rgba(20,12,8,.6),0 0 26px rgba(217,178,76,.55);
+    display:grid;place-items:center;color:#2a1c07;font-size:2rem;z-index:3}
+  .keyhole{position:absolute;top:52%;left:50%;transform:translate(-50%,-50%);z-index:2;
+    width:16px;height:16px;background:#0d0a06;border-radius:50%}
+  .keyhole::after{content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);
+    width:8px;height:16px;background:#0d0a06;border-radius:0 0 3px 3px}
+
+  h1.title{font-size:clamp(2.1rem,6vw,3.3rem);margin:6px 0 6px;line-height:1.06;
+    color:#fbf3e0;text-shadow:0 2px 18px rgba(217,178,76,.28)}
+  .subtitle{font-family:var(--serif);font-style:italic;color:#d8cdb8;font-size:1.12rem;margin:0 0 20px}
+  .story{max-width:640px;margin:0 auto 8px;color:#e7ddca;font-size:1.02rem}
+  .whisper{color:var(--brass);font-size:.92rem;margin:16px 0 26px;font-style:italic}
+  .warm{max-width:560px;margin:26px auto 0;padding:16px 16px 20px;border:1px solid rgba(217,178,76,.28);
+    border-radius:12px;background:rgba(36,22,52,.5)}
+  .warm h3{margin:0 0 4px;font-size:1rem;color:var(--brass-hi)}
+  .warm p{margin:0 0 12px;font-size:.9rem;color:#cbc0ab}
+
+  /* ---------- BUTTONS ---------- */
+  .btnrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+  button{font-family:inherit}
+  .btn{cursor:pointer;border:none;border-radius:999px;padding:13px 26px;font-size:1rem;font-weight:700;
+    letter-spacing:.02em;transition:transform .12s ease,box-shadow .12s ease,filter .12s}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{color:#2a1c07;background:linear-gradient(180deg,var(--brass-hi),var(--brass));
+    box-shadow:0 8px 22px rgba(217,178,76,.32)}
+  .btn.primary:hover{filter:brightness(1.06);box-shadow:0 10px 26px rgba(217,178,76,.42)}
+  .btn.ghost{background:transparent;color:var(--brass-hi);border:1.5px solid rgba(217,178,76,.5)}
+  .btn.ghost:hover{background:rgba(217,178,76,.1)}
+  .btn:focus-visible,.opt:focus-visible,.hearbtn:focus-visible,.wkey:focus-visible,.bkey:focus-visible,.roomtab:focus-visible{
+    outline:3px solid var(--brass-hi);outline-offset:2px}
+
+  /* ---------- HUD ---------- */
+  .hud{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;
+    padding:10px 14px;border:1px solid rgba(217,178,76,.24);border-radius:12px;
+    background:rgba(29,19,48,.7);backdrop-filter:blur(4px);margin-bottom:18px;position:sticky;top:8px;z-index:20}
+  .ring{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .ring .lab{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:#9a8f78;margin-right:4px}
+  .frag{width:30px;height:34px;border-radius:5px;display:grid;place-items:center;
+    font-family:var(--serif);font-weight:700;font-size:1.05rem;
+    background:#211630;color:#4a3e59;border:1px solid #35284a;position:relative}
+  .frag.lit{background:radial-gradient(circle at 40% 30%,var(--brass-hi),var(--brass) 55%,var(--brass-lo));
+    color:#2a1c07;border-color:var(--brass-lo);box-shadow:0 0 14px rgba(217,178,76,.5);animation:pop .45s ease}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+  .hud .meta{display:flex;gap:14px;align-items:center;font-size:.86rem;color:#cabfa9}
+  .timer{font-variant-numeric:tabular-nums;color:#e7ddca;font-weight:600}
+  .linkbtn{background:none;border:none;color:#9a8f78;cursor:pointer;font-size:.82rem;text-decoration:underline;padding:4px}
+  .linkbtn:hover{color:var(--brass-hi)}
+
+  /* ---------- ROOM NAV ---------- */
+  .roomtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .roomtab{flex:1 1 130px;min-width:120px;cursor:pointer;text-align:left;
+    border:1px solid rgba(217,178,76,.22);border-radius:10px;padding:10px 12px;
+    background:rgba(29,19,48,.55);color:#d8cdb8;transition:border-color .15s,background .15s}
+  .roomtab .rn{font-family:var(--serif);font-size:.8rem;color:var(--brass)}
+  .roomtab .rt{font-size:.9rem;font-weight:600;margin-top:2px}
+  .roomtab.active{border-color:var(--brass);background:rgba(217,178,76,.12)}
+  .roomtab.locked{opacity:.5;cursor:not-allowed}
+  .roomtab.done .rt::after{content:" ✔";color:var(--ok)}
+  .roomtab.locked .rt::after{content:" 🔒"}
+
+  /* ---------- ROOM BODY ---------- */
+  .roomhead{margin:6px 0 4px}
+  .roomhead .eyebrow{margin-bottom:6px}
+  .roomhead h2{font-size:1.7rem;margin:0;color:#fbf3e0}
+  .roomhead .rsub{font-style:italic;color:#c9bea8;margin:2px 0 0}
+  .lesson{background:rgba(36,22,52,.55);border-left:3px solid var(--brass);border-radius:0 10px 10px 0;
+    padding:14px 16px;margin:16px 0;color:#e2d8c4;font-size:.96rem}
+  .lesson b{color:#fbf3e0}
+  .reftable{width:100%;border-collapse:collapse;margin:12px 0 4px;font-size:.86rem}
+  .reftable th,.reftable td{border:1px solid rgba(217,178,76,.22);padding:5px 8px;text-align:center}
+  .reftable th{color:var(--brass);font-weight:700;font-family:var(--serif)}
+  .reftable td:first-child{color:#fbf3e0;font-weight:600}
+  .task-h{font-family:var(--serif);font-size:1.05rem;color:var(--brass-hi);margin:20px 0 8px}
+
+  /* parchment cards */
+  .card{background:linear-gradient(180deg,var(--parch),var(--parch-lo));color:var(--ink);
+    border-radius:10px;padding:14px 16px;margin:12px 0;box-shadow:0 6px 16px rgba(0,0,0,.35);
+    border:1px solid #d8c8a3}
+  .card-q{font-weight:600;font-size:1rem;margin-bottom:6px}
+  .card-notes{font-family:var(--serif);font-size:1.15rem;letter-spacing:.06em;color:#3a2f1e;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .hearbtn{cursor:pointer;border:1px solid var(--brass-lo);background:#fff8e6;color:#5a4416;
+    border-radius:999px;padding:6px 14px;font-size:.85rem;font-weight:600}
+  .hearbtn:hover{background:#fff}
+  .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{cursor:pointer;border:1.5px solid #c9b788;background:#fbf5e6;color:#3a2f1e;
+    border-radius:8px;padding:9px 15px;font-size:.94rem;font-weight:600;transition:all .12s}
+  .opt:hover{border-color:var(--brass-lo)}
+  .opt.sel{background:var(--ink);color:var(--parch);border-color:var(--ink)}
+  .card.good{box-shadow:0 0 0 2px var(--ok),0 6px 16px rgba(0,0,0,.35)}
+  .card.bad{animation:shake .4s}
+  .card.bad .opt.sel{background:var(--bad);border-color:var(--bad);color:#fff}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+  .checkrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0 6px}
+  .feedback{font-size:.9rem;min-height:1.2em}
+  .feedback.err{color:#f2b8a8}
+  .hintbox{margin-top:10px;font-size:.9rem;color:#c9bea8;font-style:italic}
+  .hintbox .h{color:var(--brass-hi);font-style:normal}
+
+  /* fragment reveal after solve */
+  .solved{margin:22px 0 6px;text-align:center;padding:22px;border-radius:14px;
+    background:radial-gradient(circle at 50% 0%,rgba(217,178,76,.18),rgba(36,22,52,.5));
+    border:1px solid rgba(217,178,76,.35)}
+  .solved .big{width:74px;height:82px;margin:4px auto 12px;border-radius:8px;display:grid;place-items:center;
+    font-family:var(--serif);font-size:2.4rem;font-weight:700;color:#2a1c07;
+    background:radial-gradient(circle at 40% 30%,var(--brass-hi),var(--brass) 55%,var(--brass-lo));
+    box-shadow:0 0 26px rgba(217,178,76,.55);animation:pop .5s ease}
+  .solved p{margin:6px 0 16px;color:#e7ddca}
+
+  /* ---------- KEYBOARD ---------- */
+  .kbwrap{margin:12px 0}
+  .kb{position:relative;height:150px;width:calc(var(--wkw)*10);max-width:100%;margin:8px 0;user-select:none}
+  .wkey{position:absolute;top:0;height:150px;width:var(--wkw);background:linear-gradient(180deg,#fdfaf2,#efe6d0);
+    border:1px solid #b7a884;border-radius:0 0 6px 6px;cursor:pointer;
+    box-shadow:inset 0 -6px 8px rgba(0,0,0,.06)}
+  .wkey:active,.wkey.on{background:linear-gradient(180deg,#f6e6b8,#e9d69a)}
+  .bkey{position:absolute;top:0;height:96px;width:var(--bkw);background:linear-gradient(180deg,#2a2118,#0e0a06);
+    border-radius:0 0 5px 5px;cursor:pointer;z-index:4;box-shadow:0 5px 6px rgba(0,0,0,.5)}
+  .bkey:active,.bkey.on{background:linear-gradient(180deg,#6b5220,#3a2c11)}
+
+  /* ---------- WIN ---------- */
+  .win{text-align:center;padding:20px 10px}
+  .win h1{font-size:clamp(2rem,6vw,3rem);color:#fbf3e0;margin:8px 0}
+  .word{display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap}
+  .word .frag{width:46px;height:54px;font-size:1.7rem}
+  .stat{color:#d8cdb8;font-size:1.05rem;margin:8px 0}
+  .stat b{color:var(--brass-hi)}
+
+  /* ---------- TEACHER ---------- */
+  .teach{background:rgba(29,19,48,.6);border:1px solid rgba(217,178,76,.25);border-radius:14px;padding:20px 22px}
+  .teach h2{color:#fbf3e0;font-size:1.6rem;margin:0 0 4px}
+  .teach h3{color:var(--brass-hi);font-size:1.05rem;margin:20px 0 6px}
+  .teach p,.teach li{color:#e2d8c4;font-size:.95rem}
+  .teach ul{margin:6px 0 6px 2px;padding-left:20px}
+  .teach li{margin:4px 0}
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  .tcard{border:1px solid rgba(217,178,76,.2);border-radius:10px;padding:12px 14px;background:rgba(36,22,52,.4)}
+  .tcard .k{font-family:var(--serif);color:var(--brass);font-size:.85rem}
+  .solkey{background:rgba(20,12,8,.4);border-radius:8px;padding:10px 14px;font-size:.9rem;color:#cbc0ab;line-height:1.7}
+  @media(max-width:640px){.tgrid{grid-template-columns:1fr}}
+
+  .footnote{text-align:center;color:#6f6553;font-size:.78rem;margin-top:34px}
+  .backrow{margin-top:22px}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============================ AUDIO ============================ */
+let actx=null;
+function ac(){ if(!actx){ actx=new (window.AudioContext||window.webkitAudioContext)(); } if(actx.state==='suspended'){actx.resume();} return actx; }
+const PC={C:0,Cis:1,Des:1,D:2,Dis:3,Es:3,E:4,F:5,Fis:6,Ges:6,G:7,Gis:8,As:8,A:9,B:10,H:11};
+function freq(name){ const m=name.match(/^([A-Za-z]+)(-?\d)$/); const pc=PC[m[1]]; const o=parseInt(m[2],10);
+  const midi=(o+1)*12+pc; return 440*Math.pow(2,(midi-69)/12); }
+function tone(f,t0,dur,peak){ const c=ac(); const o=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();
+  o.type='triangle'; o.frequency.value=f; lp.type='lowpass'; lp.frequency.value=2400;
+  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(peak,t0+0.015);
+  g.gain.exponentialRampToValueAtTime(0.0008,t0+dur);
+  o.connect(lp).connect(g).connect(c.destination); o.start(t0); o.stop(t0+dur+0.05); }
+function playChord(names,dur){ dur=dur||1.3; const t0=ac().currentTime+0.02; names.forEach(n=>tone(freq(n),t0,dur,0.15)); }
+function playNote(name){ tone(freq(name),ac().currentTime+0.01,0.9,0.2); }
+function playSeq(chords,step,dur){ step=step||0.72; dur=dur||0.66; let t=ac().currentTime+0.04;
+  chords.forEach(ch=>{ ch.forEach(n=>tone(freq(n),t,dur,0.14)); t+=step; }); }
+
+/* ============================ STATE ============================ */
+const FRAG=['T','O','N','A','R','T'];
+const state={screen:'start',current:1,solved:[],startTime:null,timerId:null,hints:[]};
+const el=()=>document.getElementById('app');
+function dn(notes){ return notes.map(n=>n.replace(/-?\d/,'')).join(' – '); }
+function allSolved(){ return state.solved.length===rooms.length && state.solved.every(Boolean); }
+function fmt(ms){ const s=Math.floor(ms/1000); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+/* ============================ ROOM DATA ============================ */
+const OPT4=['Dur','Moll','vermindert','übermäßig'];
+const OPTF=['T','S','D','Tp'];
+const OPTU=['Grundstellung','Sextakkord','Quartsextakkord'];
+const OPTS=['authentischer Schluss','plagaler Schluss','Trugschluss','Halbschluss'];
+const OPTV=['keine','1 Kreuz (Fis)','2 Kreuze (Fis, Cis)','1 b (B)','2 b (B, Es)'];
+
+const rooms=[
+ /* ---- Raum 1: Tonarten ---- */
+ { frag:'T', name:'Der Tonarten-Turm', sub:'Vorzeichen und Grundton',
+   lesson:`Jede Dur-Tonart hat feste <b>Vorzeichen</b>. Kreuze (♯) erhöhen, b (♭) erniedrigen einen Ton.
+     Der <b>Grundton</b> gibt der Tonart ihren Namen. Präge dir die fünf Tonarten dieses Spiels ein:
+     <table class="reftable"><tr><th>Tonart</th><th>Vorzeichen</th><th>Grundton</th></tr>
+     <tr><td>C-Dur</td><td>keine</td><td>C</td></tr>
+     <tr><td>G-Dur</td><td>1 ♯ (Fis)</td><td>G</td></tr>
+     <tr><td>D-Dur</td><td>2 ♯ (Fis, Cis)</td><td>D</td></tr>
+     <tr><td>F-Dur</td><td>1 ♭ (B)</td><td>F</td></tr>
+     <tr><td>B-Dur</td><td>2 ♭ (B, Es)</td><td>B</td></tr></table>`,
+   items:[
+     {q:'Welche Tonart hat keine Vorzeichen? (Du hörst ihren Grundakkord.)', notes:['C4','E4','G4'],
+      options:['C-Dur','G-Dur','F-Dur','D-Dur'], correct:'C-Dur'},
+     {q:'Welche Vorzeichen hat G-Dur?', notes:['G4','H4','D5'], options:OPTV, correct:'1 Kreuz (Fis)'},
+     {q:'Welche Vorzeichen hat D-Dur?', notes:['D4','Fis4','A4'], options:OPTV, correct:'2 Kreuze (Fis, Cis)'},
+     {q:'Welche Vorzeichen hat F-Dur?', notes:['F4','A4','C5'], options:OPTV, correct:'1 b (B)'},
+     {q:'Welche Vorzeichen hat B-Dur?', notes:['B4','D5','F5'], options:OPTV, correct:'2 b (B, Es)'},
+   ],
+   hint:'Kreuztonarten: G = 1 Kreuz, D = 2 Kreuze. B-Tonarten: F = 1 b, B = 2 b. C-Dur ist „blank".' },
+
+ /* ---- Raum 2: Dreiklangstypen ---- */
+ { frag:'O', name:'Die Dreiklang-Werkstatt', sub:'Klangfarben unterscheiden',
+   lesson:`Ein Dreiklang ist eine <b>Terzschichtung</b>: Grundton – Terz – Quinte. Die Größe der Terzen bestimmt den Typ:
+     <b>Dur</b> (groß + klein), <b>Moll</b> (klein + groß), <b>vermindert</b> (zwei kleine), <b>übermäßig</b> (zwei große).
+     Diesmal stehen die Dreiklänge auf verschiedenen Grundtönen – höre und rechne genau.`,
+   keyboard:true,
+   items:[
+     {q:'Klang 1', notes:['D4','Fis4','A4'], options:OPT4, correct:'Dur'},
+     {q:'Klang 2', notes:['G4','B4','D5'], options:OPT4, correct:'Moll'},
+     {q:'Klang 3', notes:['B4','D5','F5'], options:OPT4, correct:'Dur'},
+     {q:'Klang 4', notes:['Fis4','A4','C5'], options:OPT4, correct:'vermindert'},
+     {q:'Klang 5', notes:['Cis4','E4','G4'], options:OPT4, correct:'vermindert'},
+     {q:'Klang 6', notes:['F4','A4','Cis5'], options:OPT4, correct:'übermäßig'},
+   ],
+   hint:'Große Terz = 4 Halbtöne, kleine Terz = 3. D–Fis = 4, Fis–A = 3 → Dur. Zwei kleine Terzen ergeben „vermindert".' },
+
+ /* ---- Raum 3: Umkehrungen ---- */
+ { frag:'N', name:'Das Spiegelkabinett', sub:'Umkehrungen in mehreren Tonarten',
+   lesson:`Derselbe Dreiklang, andere Reihenfolge – entscheidend ist der <b>tiefste Ton</b>.
+     Grundton unten → <b>Grundstellung</b>. Terz unten → <b>Sextakkord</b>. Quinte unten → <b>Quartsextakkord</b>.
+     Achte darauf, welcher Ton des Home-Dreiklangs jeweils ganz links steht.`,
+   items:[
+     {q:'G-Dur-Dreiklang (G–H–D), so gestapelt:', notes:['H4','D5','G5'], options:OPTU, correct:'Sextakkord'},
+     {q:'F-Dur-Dreiklang (F–A–C), so gestapelt:', notes:['C4','F4','A4'], options:OPTU, correct:'Quartsextakkord'},
+     {q:'D-Dur-Dreiklang (D–Fis–A), so gestapelt:', notes:['D4','Fis4','A4'], options:OPTU, correct:'Grundstellung'},
+     {q:'B-Dur-Dreiklang (B–D–F), so gestapelt:', notes:['D4','F4','B4'], options:OPTU, correct:'Sextakkord'},
+     {q:'G-Dur-Dreiklang (G–H–D), so gestapelt:', notes:['D4','G4','H4'], options:OPTU, correct:'Quartsextakkord'},
+   ],
+   hint:'Nimm den ersten (tiefsten) Ton und vergleiche ihn mit dem Home-Dreiklang: Grundton, Terz oder Quinte?' },
+
+ /* ---- Raum 4: Funktionen ---- */
+ { frag:'A', name:'Der Funktionssaal', sub:'T, S und D in fünf Tonarten',
+   lesson:`In jeder Dur-Tonart gilt: <b>T</b> = Grundakkord (I. Stufe), <b>S</b> = eine Quinte tiefer (IV. Stufe),
+     <b>D</b> = eine Quinte höher (V. Stufe). Der Molldreiklang der VI. Stufe ist die <b>Tp</b>. Nutze die Tabelle:
+     <table class="reftable"><tr><th>Tonart</th><th>T</th><th>S</th><th>D</th></tr>
+     <tr><td>C-Dur</td><td>C–E–G</td><td>F–A–C</td><td>G–H–D</td></tr>
+     <tr><td>G-Dur</td><td>G–H–D</td><td>C–E–G</td><td>D–Fis–A</td></tr>
+     <tr><td>F-Dur</td><td>F–A–C</td><td>B–D–F</td><td>C–E–G</td></tr>
+     <tr><td>D-Dur</td><td>D–Fis–A</td><td>G–H–D</td><td>A–Cis–E</td></tr>
+     <tr><td>B-Dur</td><td>B–D–F</td><td>Es–G–B</td><td>F–A–C</td></tr></table>`,
+   items:[
+     {q:'Funktion in G-Dur?', notes:['G4','H4','D5'], options:OPTF, correct:'T'},
+     {q:'Funktion in G-Dur?', notes:['D4','Fis4','A4'], options:OPTF, correct:'D'},
+     {q:'Funktion in F-Dur?', notes:['B4','D5','F5'], options:OPTF, correct:'S'},
+     {q:'Funktion in D-Dur?', notes:['D4','Fis4','A4'], options:OPTF, correct:'T'},
+     {q:'Funktion in D-Dur?', notes:['A4','Cis5','E5'], options:OPTF, correct:'D'},
+     {q:'Funktion in B-Dur?', notes:['Es4','G4','B4'], options:OPTF, correct:'S'},
+   ],
+   hint:'Vergleiche den Klang mit der Zeile der Tonart in der Tabelle. Steht er auf der I., IV. oder V. Stufe?' },
+
+ /* ---- Raum 5: Kadenzen ---- */
+ { frag:'R', name:'Die Kadenz-Kammer', sub:'Schlüsse erkennen',
+   lesson:`Ein <b>Schluss</b> wirkt je nach Akkordfolge anders: <b>authentischer Schluss</b> (D→T, kräftig),
+     <b>plagaler Schluss</b> (S→T, „Amen"), <b>Halbschluss</b> (endet auf der D, offen),
+     <b>Trugschluss</b> (D→Tp statt T, überraschend). Höre die Beispiele in verschiedenen Tonarten.`,
+   listen:[
+     {label:'▶ Kadenz in G-Dur (T–S–D–T)', seq:[['G4','H4','D5'],['C4','E4','G4'],['D4','Fis4','A4'],['G4','H4','D5']]},
+     {label:'▶ D-Dur: A-Dur → D-Dur', seq:[['A4','Cis5','E5'],['D4','Fis4','A4']]},
+     {label:'▶ G-Dur: C-Dur → G-Dur', seq:[['C4','E4','G4'],['G4','H4','D5']]},
+     {label:'▶ F-Dur: C-Dur → d-Moll', seq:[['C4','E4','G4'],['D4','F4','A4']]},
+   ],
+   items:[
+     {q:'Welche Reihenfolge festigt jede Tonart eindeutig?',
+      options:['T – D – S – T','T – S – D – T','S – D – T – S'], correct:'T – S – D – T'},
+     {q:'D-Dur: Auf A-Dur (Dominante) folgt D-Dur (Tonika). Welcher Schluss?', options:OPTS, correct:'authentischer Schluss'},
+     {q:'G-Dur: Auf C-Dur (Subdominante) folgt G-Dur (Tonika). Welcher Schluss?', options:OPTS, correct:'plagaler Schluss'},
+     {q:'F-Dur: Auf C-Dur (Dominante) folgt überraschend d-Moll. Welcher Schluss?', options:OPTS, correct:'Trugschluss'},
+     {q:'B-Dur: Ein Abschnitt bleibt auf F-Dur (der Dominante) stehen. Welcher Schluss?', options:OPTS, correct:'Halbschluss'},
+   ],
+   hint:'D→T = authentisch (Ganzschluss), S→T = plagal, Ende auf D = Halbschluss, D→Tp = Trugschluss („Täuschung").' },
+
+ /* ---- Raum 6: Wandlungen ---- */
+ { frag:'T', name:'Die Kammer der Wandlungen', sub:'Modulation & Mehrklänge',
+   lesson:`Das tonale Zentrum kann wandern: kurz = <b>Ausweichung</b>, dauerhaft = <b>Modulation</b>.
+     Die <b>Doppeldominante</b> ist die „Dominante der Dominante", eine <b>Zwischendominante</b> führt zu einem
+     anderen Ziel als der Tonika. Der <b>Dominantseptakkord</b> (Dominante + Terz darüber) drängt besonders stark zur Auflösung.`,
+   items:[
+     {q:'Ein kurzer, vorübergehender Ausflug in eine andere Tonart heißt …',
+      options:['Modulation','Ausweichung','Kadenz','Parallele'], correct:'Ausweichung'},
+     {q:'Wird die neue Tonart dauerhaft erreicht, spricht man von einer …',
+      options:['Ausweichung','Modulation','Kadenz','Umkehrung'], correct:'Modulation'},
+     {q:'Die „Dominante der Dominante" nennt man …',
+      options:['Zwischendominante','Doppeldominante','Subdominante','Tonikaparallele'], correct:'Doppeldominante'},
+     {q:'Eine Dominante, die zu einem anderen Ziel als der Tonika führt, heißt …',
+      options:['Zwischendominante','Doppeldominante','Halbschluss','Parallele'], correct:'Zwischendominante'},
+     {q:'In D-Dur klingt A–Cis–E–G. Welcher Akkord ist das?', notes:['A4','Cis5','E5','G5'],
+      options:['Tonika','Dominantseptakkord','verminderter Dreiklang','Subdominante'], correct:'Dominantseptakkord'},
+     {q:'In G-Dur: Welcher Akkord ist die Doppeldominante?', notes:['A4','Cis5','E5'],
+      options:['C-Dur (C–E–G)','A-Dur (A–Cis–E)','D-Dur (D–Fis–A)','E-Dur (E–Gis–H)'], correct:'A-Dur (A–Cis–E)'},
+   ],
+   hint:'„Ausweichen" = nur kurz zur Seite. Die Doppeldominante von G ist die Dominante von D → A-Dur. A–Cis–E–G ist A⁷.' },
+];
+
+/* init arrays to room count */
+state.solved=rooms.map(()=>false); state.hints=rooms.map(()=>false);
+
+let answers={};
+
+/* ============================ RENDER ============================ */
+function render(){
+  const s=state.screen;
+  if(s==='start') return renderStart();
+  if(s==='teacher') return renderTeacher();
+  if(s==='win') return renderWin();
+  if(s==='finale') return renderFinale();
+  return renderRoom(state.current);
+}
+
+function renderStart(){
+  el().innerHTML=`
+   <div class="hero">
+     <div class="eyebrow">Musik · Oberstufe · Harmonielehre</div>
+     <div class="door" aria-hidden="true">
+       <div class="leaf l"></div><div class="leaf r"></div>
+       <div class="panel p1"></div><div class="panel p2"></div>
+       <div class="keyhole"></div><div class="seal">𝄞</div>
+     </div>
+     <h1 class="title">Der verschlossene Konzertsaal</h1>
+     <p class="subtitle">Ein Escape-Spiel durch die Welt der Harmonik</p>
+     <p class="story">Die letzte Probe ist vorbei, die Türen sind ins Schloss gefallen – und der alte
+       Kapellmeister hat den Ausgang mit <b>sechs</b> harmonischen Rätseln versiegelt. Sie führen dich durch
+       fünf Tonarten – <b>C, G, F, D und B-Dur</b>. Löse sie Raum für Raum, sammle die sechs Schlüssel-Fragmente
+       und setze daraus das Lösungswort zusammen. Nur wer die Sprache der Klänge <i>versteht</i>, kommt hier wieder heraus.</p>
+     <p class="whisper">Dreh den Ton auf – in diesem Saal muss man hören, was man sieht. 🎧</p>
+     <div class="btnrow">
+       <button class="btn primary" id="start">Spiel starten</button>
+       <button class="btn ghost" id="toteacher">Für Lehrkräfte</button>
+     </div>
+     <div class="warm">
+       <h3>Zum Aufwärmen</h3>
+       <p>Tippe die Tasten an – oder hör dir gleich einen Dur- und einen Moll-Akkord an.</p>
+       <div class="kbwrap">${keyboardHTML()}</div>
+       <div class="btnrow" style="margin-top:4px">
+         <button class="hearbtn" id="warmdur">▶ C-Dur hören</button>
+         <button class="hearbtn" id="warmmoll">▶ c-Moll hören</button>
+       </div>
+     </div>
+   </div>
+   <p class="footnote">Läuft komplett offline im Browser · Klang über die Web-Audio-Technik erzeugt.</p>`;
+  document.getElementById('start').onclick=()=>{ ac(); startGame(); };
+  document.getElementById('toteacher').onclick=()=>{ state.screen='teacher'; render(); };
+  document.getElementById('warmdur').onclick=()=>playChord(['C4','E4','G4']);
+  document.getElementById('warmmoll').onclick=()=>playChord(['C4','Es4','G4']);
+  wireKeyboard();
+}
+
+function startGame(){
+  if(!state.startTime){ state.startTime=Date.now();
+    state.timerId=setInterval(()=>{ const t=document.getElementById('timer'); if(t) t.textContent=fmt(Date.now()-state.startTime); },1000);
+  }
+  state.screen='room'; state.current=1; render();
+}
+
+function hud(){
+  const ring=FRAG.map((f,i)=>`<div class="frag ${state.solved[i]?'lit':''}">${state.solved[i]?f:'?'}</div>`).join('');
+  return `<div class="hud">
+     <div class="ring"><span class="lab">Schlüssel</span>${ring}</div>
+     <div class="meta">
+       <span class="timer" id="timer">${state.startTime?fmt(Date.now()-state.startTime):'00:00'}</span>
+       <button class="linkbtn" id="restart">Neu starten</button>
+     </div>
+   </div>`;
+}
+function roomtabs(){
+  const tabs=rooms.map((r,i)=>{
+    const unlocked = i===0 || state.solved[i-1];
+    const cls=['roomtab']; if(state.screen==='room'&&state.current===i+1)cls.push('active');
+    if(state.solved[i])cls.push('done'); if(!unlocked)cls.push('locked');
+    return `<button class="${cls.join(' ')}" data-room="${i+1}" ${unlocked?'':'disabled'}>
+       <div class="rn">Raum ${i+1}</div><div class="rt">${r.name}</div></button>`;
+  }).join('');
+  const fu=allSolved();
+  const fcls=['roomtab']; if(state.screen==='finale')fcls.push('active'); if(!fu)fcls.push('locked');
+  const fin=`<button class="${fcls.join(' ')}" data-room="finale" ${fu?'':'disabled'}>
+       <div class="rn">Finale</div><div class="rt">Der Ausgang</div></button>`;
+  return `<div class="roomtabs">${tabs}${fin}</div>`;
+}
+
+function renderRoom(n){
+  const r=rooms[n-1]; answers={};
+  const listen = r.listen? `<div class="btnrow" style="justify-content:flex-start;margin:14px 0 0">`+
+      r.listen.map((l,i)=>`<button class="hearbtn" data-seq="${i}">${l.label}</button>`).join('')+`</div>`:'';
+  const kb = r.keyboard? `<div class="kbwrap"><div class="task-h">Probier-Ecke</div>
+      <p style="color:#c9bea8;font-size:.88rem;margin:0 0 6px">Spiel die Töne selbst und vergleiche die Klangfarben.</p>
+      ${keyboardHTML()}</div>`:'';
+  const cards = r.items.map((it,idx)=>itemCard(idx,it)).join('');
+  el().innerHTML = hud()+roomtabs()+`
+     <div class="roomhead">
+       <div class="eyebrow">Raum ${n} von ${rooms.length}</div>
+       <h2>${r.name}</h2>
+       <p class="rsub">${r.sub}</p>
+     </div>
+     <div class="lesson">${r.lesson}</div>
+     ${kb}
+     ${listen}
+     <div class="task-h">Rätsel – ordne jedem Klang das Richtige zu</div>
+     <div id="cards">${cards}</div>
+     <div class="checkrow">
+       <button class="btn primary" id="check">Schloss prüfen</button>
+       <button class="btn ghost" id="hint">Tipp anzeigen</button>
+     </div>
+     <div class="feedback" id="fb"></div>
+     <div class="hintbox" id="hintbox" style="display:${state.hints[n-1]?'block':'none'}">
+       <span class="h">Tipp:</span> ${r.hint}</div>
+     <div id="solvezone"></div>`;
+  wireCommon();
+  wireKeyboard();
+  if(r.listen){ document.querySelectorAll('[data-seq]').forEach(b=>b.onclick=()=>playSeq(r.listen[+b.dataset.seq].seq)); }
+  document.querySelectorAll('.hearbtn[data-notes]').forEach(b=>b.onclick=()=>playChord(b.dataset.notes.split(',')));
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const g=b.parentElement; g.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel'); answers[b.dataset.idx]=b.dataset.val;
+    b.closest('.card').classList.remove('bad','good');
+  });
+  document.getElementById('hint').onclick=()=>{ state.hints[n-1]=true;
+    document.getElementById('hintbox').style.display='block'; };
+  document.getElementById('check').onclick=()=>checkRoom(n);
+  if(state.solved[n-1]) showSolved(n,true);
+}
+
+function itemCard(idx,it){
+  const play = it.notes? `<button class="hearbtn" data-notes="${it.notes.join(',')}">▶ hören</button>`:'';
+  const noteline = it.notes? `<div class="card-notes">${dn(it.notes)} ${play}</div>`:'';
+  const opts=it.options.map(o=>`<button class="opt" data-idx="${idx}" data-val="${o}">${o}</button>`).join('');
+  return `<div class="card" data-card="${idx}">
+     <div class="card-q">${it.q}</div>${noteline}
+     <div class="opts">${opts}</div></div>`;
+}
+
+function checkRoom(n){
+  const r=rooms[n-1]; let allOk=true, answered=true;
+  r.items.forEach((it,idx)=>{
+    const card=document.querySelector(`.card[data-card="${idx}"]`);
+    card.classList.remove('good','bad');
+    if(answers[idx]===undefined){answered=false; allOk=false; return;}
+    if(answers[idx]===it.correct){ card.classList.add('good'); }
+    else{ card.classList.add('bad'); allOk=false; }
+  });
+  const fb=document.getElementById('fb');
+  if(!answered){ fb.className='feedback err'; fb.textContent='Ordne bitte jedem Klang eine Antwort zu.'; return; }
+  if(!allOk){ fb.className='feedback err'; fb.textContent='Noch nicht ganz – die rot markierten Klänge stimmen nicht. Hör noch einmal hin.'; return; }
+  fb.className='feedback'; fb.textContent='';
+  state.solved[n-1]=true;
+  showSolved(n,false);
+}
+
+function showSolved(n,silent){
+  const r=rooms[n-1];
+  document.getElementById('check').disabled=true;
+  const goFinale = allSolved() || n>=rooms.length;
+  const next = goFinale
+     ? `<button class="btn primary" id="gofinale">Zum Ausgang →</button>`
+     : `<button class="btn primary" id="gonext">Weiter zu Raum ${n+1} →</button>`;
+  document.getElementById('solvezone').innerHTML=`
+     <div class="solved">
+       <div class="big">${r.frag}</div>
+       <p>Das Schloss klickt auf. Du erhältst das Schlüssel-Fragment <b>„${r.frag}"</b>.</p>
+       <div class="btnrow">${next}</div>
+     </div>`;
+  const oldHud=document.querySelector('.hud'), oldTabs=document.querySelector('.roomtabs');
+  if(oldHud) oldHud.outerHTML=hud(); if(oldTabs) oldTabs.outerHTML=roomtabs();
+  wireCommon();
+  const gn=document.getElementById('gonext'); if(gn) gn.onclick=()=>{ state.current=n+1; state.screen='room'; render(); };
+  const gf=document.getElementById('gofinale'); if(gf) gf.onclick=()=>{ if(allSolved()){state.screen='finale';render();} else {state.current=n+1;state.screen='room';render();} };
+  if(!silent){ try{ playChord(['C4','E4','G4','C5'],1.6);}catch(e){} }
+}
+
+function renderFinale(){
+  el().innerHTML=hud()+roomtabs()+`
+     <div class="roomhead"><div class="eyebrow">Finale</div><h2>Der Ausgang</h2>
+       <p class="rsub">Setze die sechs Fragmente zum Lösungswort zusammen</p></div>
+     <div class="lesson">Du hast alle sechs Schlüssel-Fragmente gesammelt. In der Reihenfolge der Räume
+       ergeben sie das Wort, um das sich in diesem Saal alles dreht. Gib es unten ein und öffne die Tür.</div>
+     <div class="word">${FRAG.map(f=>`<div class="frag lit">${f}</div>`).join('')}</div>
+     <div class="card" style="max-width:460px;margin:18px auto">
+       <div class="card-q" style="text-align:center">Lösungswort eingeben</div>
+       <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
+         <input id="code" maxlength="6" placeholder="_ _ _ _ _ _"
+           style="font-family:var(--serif);font-size:1.4rem;letter-spacing:.35em;text-align:center;
+           width:240px;padding:8px;border-radius:8px;border:2px solid #c9b788;background:#fff8e6;color:#2c2419;text-transform:uppercase">
+       </div>
+       <div class="opts" style="justify-content:center;margin-top:14px">
+         <button class="btn primary" id="unlock">Tür öffnen</button>
+       </div>
+       <div class="feedback err" id="ffb" style="text-align:center;margin-top:10px"></div>
+     </div>`;
+  wireCommon();
+  const inp=document.getElementById('code');
+  const tryUnlock=()=>{ const v=(inp.value||'').trim().toUpperCase();
+    if(v===FRAG.join('')){ finish(); }
+    else{ document.getElementById('ffb').textContent='Die Tür rührt sich nicht. Prüfe die Reihenfolge der Fragmente.'; } };
+  document.getElementById('unlock').onclick=tryUnlock;
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') tryUnlock(); });
+  inp.focus();
+}
+
+function finish(){
+  if(state.timerId){ clearInterval(state.timerId); }
+  state.finalTime = state.startTime? fmt(Date.now()-state.startTime):'–';
+  state.screen='win'; render();
+  try{ playSeq([['C4','E4','G4'],['F4','A4','C5'],['G4','H4','D5'],['C4','E4','G4','C5']],0.5,0.8); }catch(e){}
+}
+
+function renderWin(){
+  el().innerHTML=`
+   <div class="win">
+     <div class="eyebrow">Geschafft</div>
+     <h1>Die Türen springen auf!</h1>
+     <div class="word">${FRAG.map(f=>`<div class="frag lit">${f}</div>`).join('')}</div>
+     <p class="stat">Lösungswort: <b>TONART</b> – der Rahmen, in dem alle Klänge ihren Sinn bekommen.</p>
+     <p class="stat">Deine Zeit: <b>${state.finalTime||'–'}</b></p>
+     <p class="story" style="margin-top:16px">Du hast Vorzeichen entschlüsselt, Dreiklänge unterschieden, Umkehrungen enttarnt,
+       Funktionen in fünf Tonarten zugeordnet, Kadenzen gehört und Wandlungen verstanden. Der rote Faden dahinter:
+       das ewige Spiel von <i>Spannung und Entspannung</i> – in jeder Tonart aufs Neue.</p>
+     <div class="btnrow" style="margin-top:22px">
+       <button class="btn primary" id="again">Noch einmal spielen</button>
+       <button class="btn ghost" id="home">Zum Start</button>
+     </div>
+   </div>
+   <p class="footnote">Der verschlossene Konzertsaal · Harmonik-Escape</p>`;
+  document.getElementById('again').onclick=()=>resetAll(false);
+  document.getElementById('home').onclick=()=>resetAll(true);
+}
+
+function resetAll(toHome){
+  if(state.timerId) clearInterval(state.timerId);
+  state.solved=rooms.map(()=>false); state.hints=rooms.map(()=>false);
+  state.startTime=null; state.timerId=null; state.current=1;
+  state.screen='start';
+  render();
+}
+
+/* ---------- teacher ---------- */
+function renderTeacher(){
+  el().innerHTML=`
+   <div class="teach">
+     <div class="eyebrow">Begleitmaterial</div>
+     <h2>Für Lehrkräfte – Ablauf & Lösungen</h2>
+     <p>Ein selbstständig zu bearbeitendes Escape-Spiel zur Einführung/Sicherung der tonalen Harmonik –
+        jetzt über fünf Tonarten (<b>C, G, F, D, B-Dur</b>). Die sechs Räume folgen dem Themenaufbau:
+        Tonarten/Vorzeichen → Dreiklangstypen → Umkehrungen → Funktionen → Kadenzen → Modulation.
+        Roter Faden ist – wie im ganzen Kurs – <b>Spannung und Entspannung</b>.</p>
+
+     <div class="tgrid">
+       <div class="tcard"><div class="k">Zeitrahmen</div>ca. 60–80 Min. Spielzeit + 15–25 Min. Auswertung – füllt einen 130-Minuten-Block gut aus.</div>
+       <div class="tcard"><div class="k">Sozialform</div>Partner- oder Kleingruppen (2–3), ein Gerät pro Gruppe. Kopfhörer empfohlen (viel Klang!).</div>
+       <div class="tcard"><div class="k">Voraussetzung</div>Modernes Gerät mit Browser. Läuft offline; keine Installation, keine Anmeldung.</div>
+       <div class="tcard"><div class="k">Differenzierung</div>Referenztabellen und Tipp-Buttons in jedem Raum; starke Gruppen spielen ohne Tipps oder auf Zeit.</div>
+     </div>
+
+     <h3>Ablauf</h3>
+     <ul>
+       <li><b>Einstieg (5 Min.):</b> Story zeigen, Aufwärm-Tastatur ausprobieren, Regeln klären.</li>
+       <li><b>Erarbeitung (selbstständig):</b> Jede Gruppe löst die sechs Räume. Jeder Raum bietet einen Wissens-Impuls
+           (inkl. Referenztabelle), hörbare Klangbeispiele und ein Rätsel. Nur richtige Lösungen öffnen das Schloss und geben ein Buchstaben-Fragment.</li>
+       <li><b>Finale:</b> Aus den Fragmenten T·O·N·A·R·T entsteht das Lösungswort; die Tür öffnet sich, die Zeit wird angezeigt.</li>
+       <li><b>Sicherung (Plenum):</b> Ergebnisse besprechen, Fachbegriffe festhalten, Transfer auf ein Pflichtwerk.</li>
+     </ul>
+
+     <h3>Lernziele je Raum</h3>
+     <ul>
+       <li><b>Raum 1 – Tonarten:</b> Vorzeichen und Grundton von C, G, D, F, B-Dur zuordnen.</li>
+       <li><b>Raum 2 – Dreiklänge:</b> Dur, Moll, vermindert, übermäßig auf verschiedenen Grundtönen bestimmen.</li>
+       <li><b>Raum 3 – Umkehrungen:</b> Grundstellung, Sextakkord, Quartsextakkord am Basston erkennen.</li>
+       <li><b>Raum 4 – Funktionen:</b> T, S, D (und Tp) in fünf Tonarten zuordnen.</li>
+       <li><b>Raum 5 – Kadenzen:</b> authentischen, plagalen, Halb- und Trugschluss unterscheiden.</li>
+       <li><b>Raum 6 – Wandlungen:</b> Ausweichung/Modulation, Zwischen-/Doppeldominante, Dominantseptakkord.</li>
+     </ul>
+
+     <h3>Lösungen</h3>
+     <div class="solkey">
+       <b>Fragmentwort:</b> T · O · N · A · R · T → <b>TONART</b><br>
+       <b>Raum 1:</b> C-Dur (keine) · G-Dur (1 ♯ Fis) · D-Dur (2 ♯ Fis, Cis) · F-Dur (1 ♭ B) · B-Dur (2 ♭ B, Es)<br>
+       <b>Raum 2:</b> D–Fis–A Dur · G–B–D Moll · B–D–F Dur · Fis–A–C vermindert · Cis–E–G vermindert · F–A–Cis übermäßig<br>
+       <b>Raum 3:</b> H–D–G Sextakkord · C–F–A Quartsextakkord · D–Fis–A Grundstellung · D–F–B Sextakkord · D–G–H Quartsextakkord<br>
+       <b>Raum 4:</b> G–H–D = T · D–Fis–A = D · B–D–F = S (F-Dur) · D–Fis–A = T (D-Dur) · A–Cis–E = D · Es–G–B = S<br>
+       <b>Raum 5:</b> T–S–D–T · authentischer · plagaler · Trugschluss · Halbschluss<br>
+       <b>Raum 6:</b> Ausweichung · Modulation · Doppeldominante · Zwischendominante · Dominantseptakkord · A-Dur (A–Cis–E)
+     </div>
+
+     <h3>Anschlussaufgabe</h3>
+     <p>Gruppen erfinden eine vollständige Kadenz in einer selbst gewählten Tonart (z. B. G- oder F-Dur),
+        notieren sie in Funktionssymbolen und bauen bewusst einen Trugschluss ein – als Brücke zu den
+        Pflichtwerken (z. B. Schuberts <i>Moment musical</i> oder Griegs <i>Elegie</i>).</p>
+
+     <div class="backrow"><button class="btn ghost" id="back">← Zurück zum Start</button></div>
+   </div>`;
+  document.getElementById('back').onclick=()=>{ state.screen='start'; render(); };
+}
+
+/* ---------- shared wiring ---------- */
+function wireCommon(){
+  const rb=document.getElementById('restart'); if(rb) rb.onclick=()=>resetAll(true);
+  document.querySelectorAll('.roomtab[data-room]').forEach(t=>{
+    if(t.disabled) return;
+    t.onclick=()=>{ const r=t.dataset.room;
+      if(r==='finale'){ if(allSolved()){state.screen='finale';render();} }
+      else { state.screen='room'; state.current=parseInt(r,10); render(); } };
+  });
+}
+
+/* ---------- keyboard component ---------- */
+const WHITE=['C4','D4','E4','F4','G4','A4','H4','C5','D5','E5'];
+const BLACK_AFTER={'C4':'Cis4','D4':'Es4','F4':'Fis4','G4':'Gis4','A4':'B4','C5':'Cis5','D5':'Es5'};
+function keyboardHTML(){
+  let w=WHITE.map((n,i)=>`<button class="wkey" data-note="${n}" style="left:calc(var(--wkw)*${i})" aria-label="${n.replace(/\d/,'')}"></button>`).join('');
+  let b='';
+  WHITE.forEach((n,i)=>{ if(BLACK_AFTER[n]){ b+=`<button class="bkey" data-note="${BLACK_AFTER[n]}" style="left:calc(var(--wkw)*${i+1} - var(--bkw)/2)" aria-label="${BLACK_AFTER[n].replace(/\d/,'')}"></button>`; } });
+  return `<div class="kb" role="group" aria-label="Klaviatur">${w}${b}</div>`;
+}
+function wireKeyboard(){
+  document.querySelectorAll('.wkey,.bkey').forEach(k=>{
+    k.addEventListener('click',()=>{ playNote(k.dataset.note); k.classList.add('on'); setTimeout(()=>k.classList.remove('on'),160); });
+  });
+}
+
+/* ============================ GO ============================ */
+render();
+</script>
+</body>
+</html>
