@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spirituals · Blues · Jazz — Eine musikalische Lernreise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3EBDC;
+  --paper-2:#EBE0CD;
+  --ink:#241C13;
+  --ink-soft:#5A4B39;
+  --line:#D8C9AF;
+  --brass:#C29A45;
+  /* Station keys */
+  --spir:#B87A28;      /* amber – Hoffnung, Morgen */
+  --spir-soft:#F6E6C8;
+  --blues:#2F4E7E;     /* indigo – Nacht, Fluss */
+  --blues-soft:#DDE4EF;
+  --jazz:#9A2C4C;      /* wine – Bühne, Club */
+  --jazz-soft:#F3D9DF;
+  --ok:#3F7A45;
+  --no:#B23A3A;
+  --shadow:0 1px 0 rgba(0,0,0,.04), 0 12px 34px -18px rgba(40,28,12,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Spectral",Georgia,serif;font-size:18px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(circle at 12% 8%, rgba(194,154,69,.06), transparent 40%),
+                   radial-gradient(circle at 88% 70%, rgba(47,78,126,.05), transparent 42%);
+}
+h1,h2,h3,h4{font-family:"Fraunces",Georgia,serif;line-height:1.06;margin:0;font-weight:700}
+.eyebrow{font-family:"Archivo",sans-serif;font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:.72rem}
+.wrap{max-width:960px;margin:0 auto;padding:0 22px}
+a{color:inherit}
+
+/* ---------- TOP NAV ---------- */
+nav{position:sticky;top:0;z-index:50;background:rgba(243,235,220,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:960px;margin:0 auto;padding:10px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-family:"Fraunces";font-weight:900;font-size:1.05rem;letter-spacing:.01em;margin-right:auto}
+.brand span{color:var(--brass)}
+.nav-links{display:flex;gap:6px;flex-wrap:wrap}
+.nav-links a{font-family:"Archivo",sans-serif;font-weight:600;font-size:.82rem;text-decoration:none;padding:6px 12px;border-radius:999px;border:1px solid transparent;color:var(--ink-soft)}
+.nav-links a:hover{border-color:var(--line);color:var(--ink)}
+.nav-links a.s1:hover{color:var(--spir)} .nav-links a.s2:hover{color:var(--blues)} .nav-links a.s3:hover{color:var(--jazz)}
+.progress-mini{display:flex;align-items:center;gap:8px;font-family:"Archivo",sans-serif;font-size:.74rem;font-weight:700;color:var(--ink-soft)}
+.pbar{width:78px;height:7px;border-radius:999px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--spir),var(--blues),var(--jazz));transition:width .5s ease}
+
+/* ---------- HERO ---------- */
+.hero{padding:64px 0 34px;position:relative;overflow:hidden}
+.hero .kicker{color:var(--brass);margin-bottom:20px}
+.hero h1{font-size:clamp(2.6rem,7.5vw,5.2rem);font-weight:900;letter-spacing:-.02em}
+.hero h1 em{font-style:italic;font-weight:600}
+.hero .arc{display:flex;gap:0;margin:26px 0 8px;flex-wrap:wrap;font-family:"Archivo",sans-serif;font-weight:700;font-size:clamp(.9rem,2.6vw,1.15rem);letter-spacing:.02em}
+.hero .arc b{padding:7px 16px 7px 0;position:relative}
+.hero .arc b.a{color:var(--spir)} .hero .arc b.b{color:var(--blues)} .hero .arc b.c{color:var(--jazz)}
+.hero .arc b:not(:last-child)::after{content:"→";color:var(--ink-soft);padding-left:16px;font-weight:500}
+.lede{font-size:1.16rem;max-width:640px;color:var(--ink);margin-top:14px}
+.hero-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:30px}
+.hero-stats div{border-left:2px solid var(--brass);padding-left:12px}
+.hero-stats .n{font-family:"Fraunces";font-weight:900;font-size:1.7rem;line-height:1}
+.hero-stats .l{font-family:"Archivo",sans-serif;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft)}
+
+/* ---------- HOW-TO ---------- */
+.howto{background:var(--ink);color:var(--paper);border-radius:16px;padding:28px 30px;margin:34px 0;box-shadow:var(--shadow)}
+.howto h3{color:var(--paper);font-size:1.4rem;margin-bottom:14px}
+.howto ol{margin:0;padding-left:20px}
+.howto li{margin:9px 0;color:#E9DFC9}
+.howto li b{color:var(--brass);font-family:"Archivo",sans-serif;font-weight:700}
+
+/* ---------- STATION SHELLS ---------- */
+.station{padding:52px 0 20px;scroll-margin-top:66px}
+.station-head{border-top:3px solid;padding-top:20px;margin-bottom:8px}
+.station-head .eyebrow{color:var(--ink-soft)}
+.station-head h2{font-size:clamp(2rem,5.5vw,3.2rem);font-weight:900;margin-top:6px}
+.station-head p{max-width:660px;color:var(--ink-soft);margin-top:10px}
+.s1 .station-head{border-color:var(--spir)} .s1 .station-head h2{color:var(--spir)}
+.s2 .station-head{border-color:var(--blues)} .s2 .station-head h2{color:var(--blues)}
+.s3 .station-head{border-color:var(--jazz)} .s3 .station-head h2{color:var(--jazz)}
+.finale .station-head{border-color:var(--brass)} .finale .station-head h2{color:#8a6a1f}
+
+/* ---------- LESSON CARDS ---------- */
+.lesson{background:#FBF6EB;border:1px solid var(--line);border-radius:14px;padding:26px;margin:22px 0;box-shadow:var(--shadow)}
+.lesson>h3{font-size:1.4rem;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tag{font-family:"Archivo",sans-serif;font-weight:700;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap}
+.s1 .tag{background:var(--spir-soft);color:var(--spir)}
+.s2 .tag{background:var(--blues-soft);color:var(--blues)}
+.s3 .tag{background:var(--jazz-soft);color:var(--jazz)}
+.finale .tag{background:#F6E6C0;color:#8a6a1f}
+.lesson h4{font-family:"Archivo",sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:22px 0 8px}
+.lesson p{margin:10px 0}
+.lesson ul{margin:8px 0;padding-left:22px}
+.lesson li{margin:5px 0}
+.pull{font-family:"Fraunces";font-style:italic;font-weight:600;font-size:1.25rem;border-left:3px solid var(--brass);padding:4px 0 4px 16px;margin:16px 0;color:var(--ink)}
+
+/* aged-paper source excerpt */
+.source{background:linear-gradient(180deg,#F1E7CF,#EEE1C4);border:1px solid #E0CFA6;border-radius:10px;padding:16px 18px;font-size:.98rem;position:relative}
+.source::before{content:"Quelltext";position:absolute;top:-9px;left:14px;background:#8a6a1f;color:#fff;font-family:"Archivo";font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:5px}
+
+/* ---------- QUIZ ---------- */
+.quiz{margin:14px 0;padding:16px;border:1px dashed var(--line);border-radius:10px;background:#FCF9F1}
+.quiz .q{font-weight:600;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;font-family:"Spectral",serif;font-size:1rem;background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:11px 14px;margin:7px 0;cursor:pointer;transition:.15s;color:var(--ink)}
+.opt:hover{border-color:var(--brass)}
+.opt:disabled{cursor:default}
+.opt.correct{background:#E7F1E6;border-color:var(--ok);color:#245a2a;font-weight:600}
+.opt.wrong{background:#F6E3E3;border-color:var(--no);color:#7d2020}
+.feedback{font-family:"Archivo",sans-serif;font-size:.85rem;margin-top:8px;padding:8px 12px;border-radius:7px;display:none}
+.feedback.show{display:block}
+.feedback.good{background:#E7F1E6;color:#245a2a} .feedback.bad{background:#F6E3E3;color:#7d2020}
+
+/* ---------- MATCH ---------- */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:14px 0}
+@media(max-width:560px){.match{grid-template-columns:1fr}}
+.match .col h5{font-family:"Archivo";font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px}
+.chip{display:block;width:100%;text-align:left;font-family:"Spectral";font-size:.98rem;background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin:6px 0;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--brass)}
+.chip.sel{border-color:var(--blues);background:var(--blues-soft)}
+.chip.done{background:#E7F1E6;border-color:var(--ok);color:#245a2a;cursor:default;opacity:.85}
+.match-note{font-family:"Archivo";font-size:.8rem;color:var(--ink-soft);margin-top:6px}
+
+/* ---------- BLUES SCHEMA BUILDER ---------- */
+.builder{margin:16px 0}
+.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+@media(max-width:560px){.bars{grid-template-columns:repeat(2,1fr)}}
+.bar{aspect-ratio:1.6/1;border:1.5px solid var(--line);border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:"Fraunces";font-weight:700;font-size:1.5rem;position:relative;transition:.12s}
+.bar small{position:absolute;top:5px;left:8px;font-family:"Archivo";font-size:.6rem;font-weight:700;color:var(--ink-soft)}
+.bar:hover{border-color:var(--blues)}
+.bar.active{border-color:var(--blues);box-shadow:0 0 0 3px var(--blues-soft)}
+.bar.filled{background:var(--blues-soft);color:var(--blues)}
+.bar.correct{background:#E7F1E6;border-color:var(--ok);color:#245a2a}
+.bar.incorrect{background:#F6E3E3;border-color:var(--no);color:#7d2020}
+.palette{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.pchip{font-family:"Archivo";font-weight:700;border:1.5px solid var(--blues);color:var(--blues);background:#fff;border-radius:8px;padding:9px 15px;cursor:pointer;font-size:.9rem}
+.pchip:hover{background:var(--blues-soft)}
+.pchip.on{background:var(--blues);color:#fff}
+
+/* ---------- BLUENOTE PICKER ---------- */
+.scale{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.note{font-family:"Fraunces";font-weight:700;font-size:1.15rem;border:1.5px solid var(--line);border-radius:9px;padding:12px 16px;background:#fff;cursor:pointer;min-width:52px;text-align:center;transition:.12s}
+.note:hover{border-color:var(--blues)}
+.note.pick{background:var(--blues);color:#fff;border-color:var(--blues)}
+.note.right{background:#E7F1E6;border-color:var(--ok);color:#245a2a}
+.note.miss{background:#F6E3E3;border-color:var(--no);color:#7d2020}
+
+/* ---------- REVEAL / SOLUTION ---------- */
+.reveal{margin:12px 0;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.reveal>button{width:100%;text-align:left;background:#F5EEDF;border:0;padding:12px 15px;font-family:"Archivo";font-weight:700;font-size:.85rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}
+.reveal>button:hover{background:#EFE6D2}
+.reveal .body{display:none;padding:14px 16px;border-top:1px solid var(--line);background:#fff;font-size:.98rem}
+.reveal.open .body{display:block}
+.reveal .body code, .mono{font-family:"Archivo",monospace;background:#F1E9D8;padding:2px 6px;border-radius:5px;font-size:.9em;letter-spacing:.02em}
+
+/* buttons */
+.btn{font-family:"Archivo";font-weight:700;font-size:.85rem;border:0;border-radius:9px;padding:11px 20px;cursor:pointer;color:#fff}
+.btn.check{background:var(--blues)} .btn.check:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink-soft)}
+.btn.ghost:hover{border-color:var(--brass);color:var(--ink)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.status{font-family:"Archivo";font-size:.85rem;font-weight:600}
+
+/* checklist self-assessment */
+.check-list{list-style:none;padding:0;margin:8px 0}
+.check-list li{padding:9px 0 9px 0;border-bottom:1px dashed var(--line);display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.check-list li:last-child{border-bottom:0}
+.check-list .box{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--ink-soft);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:"Archivo";font-weight:700;color:#fff;font-size:.9rem;margin-top:2px;transition:.12s}
+.check-list li.on .box{background:var(--ok);border-color:var(--ok)}
+.check-list li.on span{color:var(--ink-soft)}
+
+/* referate grid */
+.era-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
+.era{border:1px solid var(--line);border-radius:11px;padding:16px;background:#fff}
+.era .yr{font-family:"Archivo";font-weight:700;font-size:.7rem;letter-spacing:.08em;color:var(--jazz);text-transform:uppercase}
+.era h5{font-family:"Fraunces";font-weight:700;font-size:1.15rem;margin:4px 0 8px}
+.era ul{margin:0;padding-left:16px;font-size:.9rem}
+.era li{margin:3px 0}
+
+/* finale worksheet */
+.compose{background:#FBF6EB;border:1px dashed var(--brass);border-radius:12px;padding:20px;margin:14px 0}
+.field{margin:12px 0}
+.field label{font-family:"Archivo";font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:6px}
+.field textarea,.field input{width:100%;font-family:"Spectral";font-size:1rem;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);resize:vertical}
+.field textarea:focus,.field input:focus{outline:0;border-color:var(--brass)}
+
+/* teacher panel */
+.teacher{margin:46px 0 20px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#F7F1E3}
+.teacher>summary{cursor:pointer;list-style:none;padding:18px 22px;font-family:"Archivo";font-weight:700;font-size:.95rem;display:flex;justify-content:space-between;align-items:center}
+.teacher>summary::-webkit-details-marker{display:none}
+.teacher>summary .plus{font-family:"Fraunces";font-weight:400;font-size:1.4rem;color:var(--brass)}
+.teacher[open]>summary .plus{transform:rotate(45deg)}
+.teacher .tbody{padding:0 22px 22px}
+.teacher table{width:100%;border-collapse:collapse;font-size:.9rem;margin:12px 0}
+.teacher th,.teacher td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.teacher th{font-family:"Archivo";font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.kc{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.kc span{font-family:"Archivo";font-size:.78rem;font-weight:600;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+
+footer{text-align:center;padding:40px 22px 60px;color:var(--ink-soft);font-family:"Archivo";font-size:.8rem}
+.completion{max-width:960px;margin:30px auto 0;padding:0 22px}
+.completion .banner{display:none;background:linear-gradient(120deg,var(--spir),var(--jazz));color:#fff;border-radius:14px;padding:24px 28px;text-align:center;box-shadow:var(--shadow)}
+.completion .banner.show{display:block;animation:pop .5s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.completion .banner h3{color:#fff;font-size:1.6rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand">Spirituals · Blues · <span>Jazz</span></div>
+    <div class="nav-links">
+      <a href="#spirituals" class="s1">1 Spirituals</a>
+      <a href="#blues" class="s2">2 Blues</a>
+      <a href="#jazz" class="s3">3 Jazz</a>
+      <a href="#finale">★ Werkstatt</a>
+    </div>
+    <div class="progress-mini"><div class="pbar"><i id="pbar"></i></div><span id="ptext">0%</span></div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow kicker">Musik · Jahrgang 9 · Lernreise zum selbstständigen Arbeiten</div>
+    <h1>Von der Plantage<br>zum <em>Jazzclub</em>.</h1>
+    <div class="arc"><b class="a">Spirituals</b><b class="b">Blues</b><b class="c">Jazz</b></div>
+    <p class="lede">Rund 250 Jahre Musikgeschichte in einer Reise: entstanden aus Leid und Hoffnung, geworden zur Sprache der Freiheit. Du arbeitest dich in deinem Tempo durch drei Stationen – lesen, hören, tüfteln, selbst überprüfen – und komponierst am Ende deinen eigenen Song.</p>
+    <div class="hero-stats">
+      <div><div class="n">3</div><div class="l">Stationen</div></div>
+      <div><div class="n">1&nbsp;Fluss</div><div class="l">eine Traditionslinie</div></div>
+      <div><div class="n">Du</div><div class="l">bestimmst das Tempo</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HOW TO -->
+  <div class="howto">
+    <h3>So arbeitest du mit dieser Reise</h3>
+    <ol>
+      <li><b>Lesen &amp; verstehen.</b> Jede Station beginnt mit kurzen Info-Blöcken. Nimm dir Zeit, markiere im Heft, was neu ist.</li>
+      <li><b>Selbst prüfen.</b> Quiz-Fragen und Aufgaben geben dir sofort Rückmeldung. Falsch ist erlaubt – lies die Erklärung und mach weiter.</li>
+      <li><b>Tüfteln.</b> Baukästen wie das Blues-Schema oder die Bluenote-Suche machst du direkt hier am Bildschirm.</li>
+      <li><b>Aufs Papier.</b> Wo Noten geschrieben werden, nutzt du die Arbeitsblätter deiner Lehrkraft – hier findest du jeweils die Lösung zum Vergleichen.</li>
+      <li><b>Fortschritt.</b> Oben rechts siehst du, wie weit du bist. Ziel: alle drei Stationen und die Werkstatt.</li>
+    </ol>
+  </div>
+
+  <!-- ============ STATION 1: SPIRITUALS ============ -->
+  <section class="station s1" id="spirituals">
+    <div class="station-head">
+      <div class="eyebrow">Station 1</div>
+      <h2>Spirituals</h2>
+      <p>Lieder von Menschen in Ketten – voller versteckter Botschaften, voller Sehnsucht nach Freiheit. Hier beginnt alles.</p>
+    </div>
+
+    <!-- 1.1 -->
+    <div class="lesson">
+      <h3><span class="tag">1.1 Geschichte</span> Eine Zeitreise in die Sklaverei</h3>
+      <p>Um Spirituals zu verstehen, reisen wir ins Amerika des 17. Jahrhunderts. Aus Afrika verschleppte Menschen mussten auf Tabak- und Baumwollplantagen Zwangsarbeit leisten. Sie brachten ihre eigene Kultur mit – Überlieferungen, Glauben, vor allem aber die Untrennbarkeit von <b>Musik, Tanz und Gesang</b>. Diese vermischte sich mit der christlichen Lehre der weißen Gottesdienste.</p>
+      <div class="source">In der rhythmischen Zwiesprache des Predigers mit der Gemeinde entwickelten sich spontan Lieder mit einem Bibeltext als Kern. Diese Spirituals entstanden in freier Improvisation und wurden nur <b>mündlich überliefert</b>.</div>
+
+      <h4>Die wichtigsten Wegmarken</h4>
+      <div class="era-grid">
+        <div class="era"><div class="yr">1619</div><h5>Ankunft</h5><ul><li>Erste verschleppte Menschen erreichen Virginia</li><li>Zwangsarbeit auf Plantagen</li></ul></div>
+        <div class="era"><div class="yr">1667</div><h5>Ein Gesetz</h5><ul><li>Taufe ändert nichts am Sklaven-Status</li><li>Erst jetzt „durften" sie Christen werden</li></ul></div>
+        <div class="era"><div class="yr">ab 1838</div><h5>Underground Railroad</h5><ul><li>Geheimes Fluchtnetzwerk in den Norden</li><li>Lieder als Kommunikationsmittel</li></ul></div>
+        <div class="era"><div class="yr">1865</div><h5>Abschaffung</h5><ul><li>Sklaverei offiziell beendet</li><li>Fisk-University singt Spirituals in aller Welt → später der <b>Gospel</b></li></ul></div>
+      </div>
+
+      <div class="quiz" data-quiz>
+        <div class="q">Warum wurden die Spirituals über Generationen weitergegeben, obwohl sie kaum jemand aufschrieb?</div>
+        <button class="opt" data-correct>Sie wurden mündlich überliefert – von Stimme zu Stimme, oft improvisiert.</button>
+        <button class="opt">Sie standen in den Gesangbüchern der Plantagenbesitzer.</button>
+        <button class="opt">Die Fisk-University druckte sie ab 1619 in Notenheften.</button>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <!-- 1.2 -->
+    <div class="lesson">
+      <h3><span class="tag">1.2 Geheimcode</span> Lieder mit doppeltem Boden</h3>
+      <p>Viele Spirituals klingen wie fromme Bibellieder – und waren zugleich <b>verschlüsselte Botschaften</b>. Wer den Code kannte, hörte darin Fluchtpläne. Die Fluchthelferin Harriet Tubman trug sogar den Codenamen „Moses".</p>
+      <p>Ordne die codierten Begriffe ihrer geheimen Bedeutung zu. Klicke links ein Wort an, dann rechts die passende Bedeutung.</p>
+
+      <div class="match" data-match>
+        <div class="col" data-side="l">
+          <h5>Im Lied heißt es …</h5>
+          <button class="chip" data-key="jordan">„Jordan"</button>
+          <button class="chip" data-key="canaan">„Sweet Canaan" / „the Promised Land"</button>
+          <button class="chip" data-key="moses">„Go down, Moses"</button>
+          <button class="chip" data-key="wade">„Wade in the Water"</button>
+        </div>
+        <div class="col" data-side="r">
+          <h5>… gemeint ist</h5>
+          <button class="chip" data-key="canaan">Das freie Gebiet im Norden</button>
+          <button class="chip" data-key="wade">Durchs Wasser waten, um die Spürhunde abzuschütteln</button>
+          <button class="chip" data-key="jordan">Der Ohio-River – die Grenze zur Freiheit</button>
+          <button class="chip" data-key="moses">Anspielung auf die Fluchthelferin Harriet Tubman</button>
+        </div>
+      </div>
+      <div class="match-note" data-matchnote>0 / 4 Paaren gefunden</div>
+      <p class="pull">Ein Lied konnte gleichzeitig ein Gebet, ein Protest und ein Reiseplan sein.</p>
+    </div>
+
+    <!-- 1.3 -->
+    <div class="lesson">
+      <h3><span class="tag">1.3 Merkmale</span> Woran du einen Spiritual erkennst</h3>
+      <ul>
+        <li><b>Call &amp; Response</b> – ein Vorsänger ruft, die Gruppe antwortet (aus der Zwiesprache Prediger–Gemeinde).</li>
+        <li><b>Improvisation &amp; mündliche Überlieferung</b> – kein festes Notenblatt.</li>
+        <li><b>Körper als Instrument</b> – Klatschen und Stampfen (nachdem Trommeln verboten wurden).</li>
+        <li><b>Religiöse Texte voller Hoffnung</b> – Trost, Sehnsucht nach Freiheit, Glaube an Errettung.</li>
+        <li><b>Pentatonischer Tonvorrat</b> – die Melodien nutzen oft nur <b>fünf Töne</b> (dazu gleich mehr).</li>
+      </ul>
+      <div class="quiz" data-quiz>
+        <div class="q">Was unterscheidet den Grundton der Spiritual-Texte am deutlichsten vom späteren Blues?</div>
+        <button class="opt" data-correct>Spirituals spenden Trost und Hoffnung, der Blues verharrt eher in der Ausweglosigkeit.</button>
+        <button class="opt">Spirituals handeln nur von Liebe, der Blues nur von Religion.</button>
+        <button class="opt">Spirituals wurden mit E-Gitarre begleitet, der Blues a cappella.</button>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <!-- 1.4 -->
+    <div class="lesson">
+      <h3><span class="tag">1.4 Musik-Werkstatt</span> Der Tonvorrat: die Pentatonik</h3>
+      <p>Auf den Arbeitsblättern zu <em>Go Down Moses</em>, <em>Nobody Knows</em> und <em>Soon and Very Soon</em> sollst du den <b>Tonvorrat</b> herausschreiben: Sammle alle vorkommenden Töne und ordne sie – bei <em>Go Down Moses</em> beginnend auf a′ – zu einer Leiter.</p>
+      <p>Fällt dir etwas auf? Zähle die verschiedenen Töne.</p>
+      <div class="quiz" data-quiz>
+        <div class="q">Wie viele verschiedene Töne hat eine <b>pentatonische</b> Leiter?</div>
+        <button class="opt">7</button>
+        <button class="opt" data-correct>5</button>
+        <button class="opt">12</button>
+        <div class="feedback"></div>
+      </div>
+      <p><b>Die Entdeckung:</b> Viele Spirituals kommen mit einer <b>Fünf-Ton-Leiter (Pentatonik)</b> aus. Weil ihr die „gefährlichen" Halbtonschritte fehlen, klingt sie offen und trägt gut den Gesang großer Gruppen. Genau dieser Tonvorrat taucht später im Blues wieder auf – die erste Brücke zwischen den Stationen.</p>
+      <div class="reveal" data-reveal>
+        <button>Lösung &amp; Merksatz zum Vergleichen<span>+</span></button>
+        <div class="body">
+          <p>Trägst du die Töne der Melodie als Leiter auf, erhältst du <b>fünf verschiedene Tonstufen</b> – eine Pentatonik. Auf dem Arbeitsblatt notierst du sie im Violinschlüssel; hier geht es nur um die Erkenntnis:</p>
+          <p class="mono">Pentatonik = 5 Töne · keine Halbtonschritte · typisch für Spirituals &amp; Blues</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- self assessment 1 -->
+    <div class="lesson">
+      <h3><span class="tag">Check</span> Kann ich das? Station 1</h3>
+      <p>Hake ehrlich ab, was du sicher kannst. Was noch fehlt, schaust du oben nochmal an.</p>
+      <ul class="check-list" data-selfcheck data-station="s1">
+        <li><span class="box"></span><span>Ich kann die Entstehung der Spirituals mit eigenen Worten erzählen.</span></li>
+        <li><span class="box"></span><span>Ich kann mindestens zwei codierte Begriffe und ihre geheime Bedeutung nennen.</span></li>
+        <li><span class="box"></span><span>Ich kann vier typische Merkmale eines Spirituals aufzählen.</span></li>
+        <li><span class="box"></span><span>Ich weiß, was eine pentatonische Leiter ist, und kann einen Tonvorrat ordnen.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ STATION 2: BLUES ============ -->
+  <section class="station s2" id="blues">
+    <div class="station-head">
+      <div class="eyebrow">Station 2</div>
+      <h2>Blues</h2>
+      <p>„Blue" heißt schwermütig. Aus derselben Wurzel wie die Spirituals wächst eine neue Liedform – ehrlicher, härter, mit einem eigenen musikalischen Bauplan.</p>
+    </div>
+
+    <!-- 2.1 -->
+    <div class="lesson">
+      <h3><span class="tag">2.1 Grundlagen</span> Was ist der Blues?</h3>
+      <p>Der Blues entsteht aus der Vermischung afrikanischer und europäischer Musik. Seine Texte sprechen aus, was der düstere Alltag brachte: <b>Armut und Not, soziale Ungerechtigkeit, Rassendiskriminierung, betrogene Liebe, Naturkatastrophen</b>.</p>
+      <p class="pull">Während die Spirituals Hoffnung spenden, verharren die Blues-Gesänge in der Ausweglosigkeit.</p>
+      <div class="quiz" data-quiz>
+        <div class="q">Woher stammt das Wort „Blues"?</div>
+        <button class="opt" data-correct>Von engl. „blue" = schwermütig, niedergeschlagen.</button>
+        <button class="opt">Von der blauen Arbeitskleidung der Musiker.</button>
+        <button class="opt">Von der Stadt Bluesville in Louisiana.</button>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <!-- 2.2 -->
+    <div class="lesson">
+      <h3><span class="tag">2.2 Songanalyse</span> Backwater Blues</h3>
+      <p>Bessie Smiths <em>Backwater Blues</em> erzählt von einer <b>Flut</b>: Fünf Tage Regen, der Himmel „dark as night", Unglück im Tiefland. Ein klassisches Blues-Thema – die Naturkatastrophe, gegen die der Mensch machtlos ist.</p>
+      <p>Auf dem Arbeitsblatt bestimmst du Tonart und Tonvorrat und markierst die Abschnitte. Prüfe dein Ergebnis:</p>
+      <div class="reveal" data-reveal>
+        <button>Lösung: Tonart, Form &amp; Call/Response<span>+</span></button>
+        <div class="body">
+          <ul>
+            <li><b>Tonart:</b> C-Dur (keine Vorzeichen; die tiefen Töne sind Bluenotes als Vorzeichen in der Melodie).</li>
+            <li><b>Textinhalt:</b> Überschwemmung/Naturkatastrophe – Ausweglosigkeit.</li>
+            <li><b>Form:</b> gesungener Ruf (<span class="mono">call</span>) und instrumentale Antwort (<span class="mono">response</span>) wechseln sich ab – wie beim Spiritual!</li>
+            <li><b>Bauplan:</b> 12 Takte, gegliedert in <b>drei Viertakt-Gruppen</b>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.3 -->
+    <div class="lesson">
+      <h3><span class="tag">2.3 Harmonie-Werkstatt</span> Kadenz &amp; Hauptdreiklänge</h3>
+      <p>Bevor wir den Blues bauen, brauchst du drei Akkorde. In jeder Dur-Tonart bilden die <b>1., 4. und 5. Stufe</b> die <b>Hauptdreiklänge</b>:</p>
+      <ul>
+        <li><b>I. Stufe → Tonika (T)</b> – das Zuhause, das Zentrum. In C-Dur: <span class="mono">C</span></li>
+        <li><b>IV. Stufe → Subdominante (S)</b> – wandert weg. In C-Dur: <span class="mono">F</span></li>
+        <li><b>V. Stufe → Dominante (D)</b> – erzeugt Spannung, will zurück zur Tonika. In C-Dur: <span class="mono">G</span></li>
+      </ul>
+      <p>Die Abfolge <b>T – S – D – T</b> erzeugt Spannung, die erst die Tonika wieder löst. Das nennt man <b>Kadenz</b>.</p>
+      <div class="quiz" data-quiz>
+        <div class="q">Welcher Akkord erzeugt die meiste Spannung „nach Hause"?</div>
+        <button class="opt">Die Tonika (T)</button>
+        <button class="opt">Die Subdominante (S)</button>
+        <button class="opt" data-correct>Die Dominante (D)</button>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <!-- 2.4 builder -->
+    <div class="lesson">
+      <h3><span class="tag">2.4 Baukasten</span> Das 12-taktige Blues-Schema</h3>
+      <p>Jetzt baust du das berühmte Blues-Schema in <b>C-Dur</b>. Klicke unten einen Akkord an (T = C, S = F, D = G), dann tippe die Takte an, in die er gehört. Orientiere dich am <em>Backwater Blues</em>. Wenn alle 12 Takte gefüllt sind, drücke <b>Prüfen</b>.</p>
+
+      <div class="builder" data-builder>
+        <div class="palette">
+          <button class="pchip" data-chord="C">T · C</button>
+          <button class="pchip" data-chord="F">S · F</button>
+          <button class="pchip" data-chord="G">D · G</button>
+        </div>
+        <div class="bars"></div>
+        <div class="btn-row">
+          <button class="btn check" data-checkbuilder>Prüfen</button>
+          <button class="btn ghost" data-resetbuilder>Zurücksetzen</button>
+          <span class="status" data-builderstatus></span>
+        </div>
+      </div>
+
+      <div class="reveal" data-reveal>
+        <button>Lösung &amp; das Schema in anderen Tonarten<span>+</span></button>
+        <div class="body">
+          <p><b>Grundschema (Stufen):</b> <span class="mono">I I I I · IV IV I I · V IV I I</span> &nbsp;=&nbsp; funktional <span class="mono">T T T T · S S T T · D S T T</span></p>
+          <p><b>C-Dur:</b> <span class="mono">C C C C · F F C C · G F C C</span></p>
+          <p>Zum Üben auf dem Arbeitsblatt – immer nach demselben Muster (I/IV/V):</p>
+          <ul>
+            <li><b>F-Dur:</b> <span class="mono">F … Bb … C Bb F F</span></li>
+            <li><b>G-Dur:</b> <span class="mono">G … C … D C G G</span></li>
+            <li><b>D-Dur:</b> <span class="mono">D … G … A G D D</span></li>
+            <li><b>A-Dur:</b> <span class="mono">A … D … E D A A</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.5 bluenotes -->
+    <div class="lesson">
+      <h3><span class="tag">2.5 Sound</span> Die Bluenotes</h3>
+      <p>Der typische, „schmutzige" Blues-Klang entsteht durch <b>Bluenotes</b>: absichtlich erniedrigte Töne, die zwischen Dur und Moll schweben. Es sind genau drei Stufen: die <b>kleine Terz</b>, die <b>verminderte Quinte</b> und die <b>kleine Septime</b>.</p>
+      <p>Hier siehst du eine C-Dur-Leiter, erweitert um die Blues-Töne. Klicke die <b>drei Bluenotes</b> an und drücke <b>Prüfen</b>.</p>
+      <div class="scale" data-notes>
+        <button class="note" data-n="C">C</button>
+        <button class="note" data-n="Eb" data-blue>E♭</button>
+        <button class="note" data-n="E">E</button>
+        <button class="note" data-n="F">F</button>
+        <button class="note" data-n="Gb" data-blue>G♭</button>
+        <button class="note" data-n="G">G</button>
+        <button class="note" data-n="A">A</button>
+        <button class="note" data-n="Bb" data-blue>B♭</button>
+        <button class="note" data-n="B">B</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn check" data-checknotes>Prüfen</button>
+        <button class="btn ghost" data-resetnotes>Zurücksetzen</button>
+        <span class="status" data-notestatus></span>
+      </div>
+      <p style="margin-top:14px"><b>Merke:</b> kleine Terz (E♭), verminderte Quinte (G♭) und kleine Septime (B♭). Diese drei Töne teilen sich Blues und Spirituals über den gemeinsamen pentatonischen Ursprung.</p>
+    </div>
+
+    <!-- self assessment 2 -->
+    <div class="lesson">
+      <h3><span class="tag">Check</span> Kann ich das? Station 2</h3>
+      <ul class="check-list" data-selfcheck data-station="s2">
+        <li><span class="box"></span><span>Ich kann erklären, worüber Blues-Texte handeln und was „blue" bedeutet.</span></li>
+        <li><span class="box"></span><span>Ich kann Tonika, Subdominante und Dominante in C-Dur benennen.</span></li>
+        <li><span class="box"></span><span>Ich kann das 12-taktige Blues-Schema aufschreiben (auch in einer anderen Tonart).</span></li>
+        <li><span class="box"></span><span>Ich kann die drei Bluenotes nennen.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ STATION 3: JAZZ ============ -->
+  <section class="station s3" id="jazz">
+    <div class="station-head">
+      <div class="eyebrow">Station 3</div>
+      <h2>Jazz</h2>
+      <p>Aus Spiritual und Blues wird eine Kunst der Freiheit: Improvisation, Swing und schillernde Akkorde. Willkommen im Club.</p>
+    </div>
+
+    <!-- 3.1 -->
+    <div class="lesson">
+      <h3><span class="tag">3.1 Überblick</span> Die Epochen des Jazz</h3>
+      <p>Jazz ist keine einzelne Musik, sondern eine Familie von Stilen, die sich über gut hundert Jahre entwickelt hat. Verschaff dir einen Überblick:</p>
+      <div class="era-grid">
+        <div class="era"><div class="yr">ab ~1900</div><h5>Ragtime &amp; New Orleans</h5><ul><li>Marschkapellen, Klavier-Ragtime</li><li>kollektive Improvisation</li><li>Louis Armstrong</li></ul></div>
+        <div class="era"><div class="yr">ab ~1930</div><h5>Swing</h5><ul><li>Big Bands, Tanzmusik</li><li>der „swingende" Rhythmus</li><li>Duke Ellington, Count Basie</li></ul></div>
+        <div class="era"><div class="yr">ab ~1945</div><h5>Bebop</h5><ul><li>kleine Combos, hohes Tempo</li><li>komplexe Harmonien, Solokunst</li><li>Charlie Parker, Dizzy Gillespie</li></ul></div>
+        <div class="era"><div class="yr">ab ~1950</div><h5>Cool · Free · Fusion</h5><ul><li>ruhiger, dann völlig frei, dann mit Rock/Elektronik</li><li>Miles Davis, John Coltrane</li></ul></div>
+      </div>
+      <p><b>Referat:</b> Zu diesen vier Epochen erstellt ihr in Gruppen je ein kurzes Referat. Nutzt für jede Epoche denselben Raster – so werden die Vorträge vergleichbar.</p>
+      <div class="reveal" data-reveal>
+        <button>Referat-Raster (für den Referatszettel)<span>+</span></button>
+        <div class="body">
+          <p>Für jede Epoche recherchiert und notiert ihr:</p>
+          <ul>
+            <li><b>Zeit</b> – Wann war die Blütezeit?</li>
+            <li><b>Hauptvertreter</b> – 2–3 wichtige Musiker:innen</li>
+            <li><b>Instrumente</b> – typische Besetzung</li>
+            <li><b>Musikalische Merkmale</b> – Rhythmus, Harmonik, Improvisation, Besetzungsgröße</li>
+            <li><b>Geschichtliches</b> – Wo/warum entstanden? Gesellschaftlicher Hintergrund</li>
+            <li><b>Sonstiges</b> – ein Hörbeispiel, eine überraschende Info</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.2 -->
+    <div class="lesson">
+      <h3><span class="tag">3.2 Rhythmus</span> Swing &amp; Synkopen</h3>
+      <p>Was bringt den Jazz zum Grooven? Vor allem die <b>Synkope</b>: Betonungen liegen nicht auf den erwarteten Zählzeiten, sondern „dazwischen" – auf den unbetonten Teilen. Das erzeugt Spannung und Bewegung.</p>
+      <p>Probier es aus (leise mitklatschen): Zähle laut <b>1&nbsp;&&nbsp;2&nbsp;&&nbsp;3&nbsp;&&nbsp;4&nbsp;&</b> und klatsche nur auf die fett markierten Stellen:</p>
+      <div class="source" style="font-family:'Archivo';letter-spacing:.05em;text-align:center;font-size:1.05rem">
+        1&nbsp;&nbsp; <b>&amp;</b> &nbsp;&nbsp;2&nbsp;&nbsp; <b>&amp;</b> &nbsp;&nbsp;3&nbsp;&nbsp; <b>&amp;</b> &nbsp;&nbsp;4&nbsp;&nbsp; <b>&amp;</b>
+      </div>
+      <p>Klatschst du nur auf die „&amp;", betonst du die <b>Off-Beats</b> – das ist das Grundgefühl des Swing. Auf dem Synkopen-Arbeitsblatt trainierst du das dann mit Noten.</p>
+      <div class="quiz" data-quiz>
+        <div class="q">Was ist eine Synkope?</div>
+        <button class="opt" data-correct>Eine Betonung auf einer eigentlich unbetonten Zählzeit.</button>
+        <button class="opt">Ein Akkord aus fünf Tönen.</button>
+        <button class="opt">Ein besonders langsames Tempo.</button>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <!-- 3.3 -->
+    <div class="lesson">
+      <h3><span class="tag">3.3 Harmonie</span> Farbakkorde</h3>
+      <p>Der Jazz nimmt die schlichten Dreiklänge des Blues und <b>färbt</b> sie ein: Man fügt weitere Töne hinzu und erhält reichere, schwebende Klänge. Aus dem Dreiklang werden <b>Vierklänge (Septakkorde)</b>.</p>
+      <ul>
+        <li><b>Dur-Dreiklang</b> – der schlichte Grundklang (z.&nbsp;B. C)</li>
+        <li><b>Dominantseptakkord (7)</b> – Dur + kleine Septime, treibt vorwärts (z.&nbsp;B. C7, G7)</li>
+        <li><b>Major-Sept (maj7)</b> – Dur + große Septime, weich &amp; „cool" (z.&nbsp;B. Cmaj7)</li>
+        <li><b>Moll-Sept (m7)</b> – Moll + kleine Septime (z.&nbsp;B. Am7)</li>
+        <li><b>halbvermindert (m7♭5)</b> – der geheimnisvolle Spannungsklang</li>
+      </ul>
+      <div class="quiz" data-quiz>
+        <div class="q">Wie entsteht aus einem Dur-Dreiklang ein Farbakkord?</div>
+        <button class="opt">Man lässt einen Ton weg.</button>
+        <button class="opt" data-correct>Man erweitert ihn um zusätzliche Töne, z.&nbsp;B. eine Septime.</button>
+        <button class="opt">Man spielt ihn nur lauter.</button>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <!-- 3.4 -->
+    <div class="lesson">
+      <h3><span class="tag">3.4 Analyse</span> Die II–V–I-Kadenz &amp; „How High The Moon"</h3>
+      <p>Wo der Blues mit I–IV–V arbeitet, ist die Lieblingswendung des Jazz die <b>II–V–I-Kadenz</b> – mit Farbakkorden. Sie zieht kraftvoll zur Tonika.</p>
+      <div class="reveal" data-reveal>
+        <button>Lösung: II–V–I in drei Tonarten<span>+</span></button>
+        <div class="body">
+          <ul>
+            <li><b>F-Dur:</b> <span class="mono">Gm7 → C7 → Fmaj7</span></li>
+            <li><b>Es-Dur:</b> <span class="mono">Fm7 → B♭7 → E♭maj7</span></li>
+            <li><b>G-Dur:</b> <span class="mono">Am7 → D7 → Gmaj7</span></li>
+          </ul>
+          <p>Muster: <span class="mono">m7 (II.&nbsp;Stufe) → 7 (V.&nbsp;Stufe) → maj7 (I.&nbsp;Stufe)</span></p>
+        </div>
+      </div>
+      <h4>Jazz-Kriterien an „How High The Moon"</h4>
+      <p>Analysiere das Stück (Arbeitsblatt) mit diesen Suchfragen – so erkennst du „echten" Jazz:</p>
+      <ul>
+        <li><b>Improvisation:</b> Wird über das Thema frei solistisch weitergespielt?</li>
+        <li><b>Swing:</b> Sind die Achtel „swingend" (ternär) phrasiert, mit Off-Beat-Betonungen?</li>
+        <li><b>Farbakkorde:</b> Hörst/siehst du Septakkorde statt schlichter Dreiklänge?</li>
+        <li><b>II–V–I:</b> Findest du diese Kadenzwendungen im Harmonieverlauf?</li>
+        <li><b>Besetzung:</b> Combo (Klavier, Bass, Schlagzeug, Bläser)?</li>
+      </ul>
+      <div class="quiz" data-quiz>
+        <div class="q">Welche Akkordfolge ist die typische Jazz-Kadenz?</div>
+        <button class="opt">I – IV – V</button>
+        <button class="opt" data-correct>II – V – I (m7 – 7 – maj7)</button>
+        <button class="opt">T – S – T</button>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <!-- self assessment 3 -->
+    <div class="lesson">
+      <h3><span class="tag">Check</span> Kann ich das? Station 3</h3>
+      <ul class="check-list" data-selfcheck data-station="s3">
+        <li><span class="box"></span><span>Ich kann vier Jazz-Epochen in ihrer Reihenfolge nennen.</span></li>
+        <li><span class="box"></span><span>Ich kann erklären, was eine Synkope ist, und Off-Beats klatschen.</span></li>
+        <li><span class="box"></span><span>Ich kann einen Dreiklang von einem Farbakkord (Septakkord) unterscheiden.</span></li>
+        <li><span class="box"></span><span>Ich kann eine II–V–I-Kadenz in mindestens einer Tonart bilden.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ FINALE ============ -->
+  <section class="station finale" id="finale">
+    <div class="station-head">
+      <div class="eyebrow">Kreativwerkstatt</div>
+      <h2>Mein eigener Blues</h2>
+      <p>Jetzt bist du dran. Bring alles zusammen – und mach daraus etwas Eigenes.</p>
+    </div>
+
+    <div class="lesson">
+      <h3><span class="tag">Projekt</span> Schreib deinen Song</h3>
+      <p>Du hast alle Werkzeuge: das Blues-Schema, die Bluenotes, Call &amp; Response, das pentatonische Fundament. Erfinde einen eigenen Blues (oder Spiritual) über etwas, das <b>dich</b> beschäftigt. Nutze die Felder als Planung – deine Notizen bleiben in diesem Fenster erhalten, solange du es geöffnet lässt.</p>
+
+      <div class="compose">
+        <div class="field">
+          <label>1 · Thema — worüber singt dein Blues?</label>
+          <input type="text" data-persist="thema" placeholder="z. B. Montagmorgen, Fernweh, Streit mit …">
+        </div>
+        <div class="field">
+          <label>2 · Tonart &amp; Schema (I–IV–V)</label>
+          <input type="text" data-persist="tonart" placeholder="z. B. C-Dur:  C C C C | F F C C | G F C C">
+        </div>
+        <div class="field">
+          <label>3 · Deine erste Zeile (Call)</label>
+          <input type="text" data-persist="call" placeholder="Der Ruf – wird meist wiederholt …">
+        </div>
+        <div class="field">
+          <label>4 · Antwort/Fortführung (Response) &amp; Pointe</label>
+          <textarea rows="3" data-persist="response" placeholder="Die Antwort und der überraschende Schluss der Strophe …"></textarea>
+        </div>
+        <div class="field">
+          <label>5 · Wo baust du Bluenotes oder Synkopen ein?</label>
+          <textarea rows="2" data-persist="wuerze" placeholder="z. B. kleine Terz auf 'blue', Off-Beat-Betonung im Refrain …"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn check" data-finish>Werkstatt abschließen</button>
+          <button class="btn ghost" data-print>Als Seite drucken / PDF</button>
+        </div>
+      </div>
+
+      <p class="pull">Von Menschen in Ketten bis auf die Bühnen der Welt: Du hast eine 250-jährige Traditionslinie durchwandert – und schreibst gerade ihre nächste Zeile.</p>
+    </div>
+  </section>
+
+  <!-- completion banner -->
+  <div class="completion"><div class="banner" id="banner"><h3>Reise abgeschlossen! 🎺</h3><p>Du hast Spirituals, Blues und Jazz erkundet und deinen eigenen Song geplant. Zeig deiner Klasse, was aus dieser Tradition entstanden ist.</p></div></div>
+
+  <!-- ============ TEACHER PANEL ============ -->
+  <details class="teacher">
+    <summary>Für die Lehrkraft: Sequenzplan, Kompetenzen &amp; Materialbezug <span class="plus">+</span></summary>
+    <div class="tbody">
+      <p style="font-size:.92rem;color:var(--ink-soft)">Diese Lernumgebung strukturiert die Reihe für weitgehend selbstständiges Arbeiten (Distanz-, Stations- oder Wochenplanarbeit). Die digitalen Bausteine führen und geben Sofortfeedback; die Notationsaufgaben werden auf den vorhandenen Arbeitsblättern erledigt und hier per „Lösung"-Reveal verglichen. Umfang: <b>ca. 14–16 Unterrichtsstunden</b>.</p>
+
+      <table>
+        <tr><th>Phase</th><th>Inhalt (digital)</th><th>Zugehöriges Arbeitsblatt</th><th>Std.</th></tr>
+        <tr><td>1 Spirituals</td><td>Geschichte, Geheimcode, Merkmale, Tonvorrat/Pentatonik</td><td>„Was ist Gospel/Spiritual", Spirituals, Go Down Moses, Soon &amp; Very Soon / Nobody Knows</td><td>3–4</td></tr>
+        <tr><td>2 Blues</td><td>Blues-Grundlagen, Backwater Blues, Kadenz &amp; Hauptdreiklänge, Blues-Schema-Baukasten, Bluenotes, Pentatonik</td><td>Der Blues, Harmonische Funktionen/Kadenz, Hauptdreiklänge im Blues, Übungen zum Bluesschema, Pentatoniken</td><td>4–5</td></tr>
+        <tr><td>3 Jazz</td><td>Epochen-Überblick &amp; Gruppenreferate, Synkopen/Swing, Farbakkorde, II–V–I, Analyse „How High The Moon"</td><td>Jazz im Überblick (Referatszettel), Referate-Material, Synkopen, FarbAkkorde, Jazz-Analyse</td><td>4–5</td></tr>
+        <tr><td>★ Werkstatt</td><td>Eigener Blues/Spiritual, Präsentation</td><td>„Mein eigener Spiritual/Blues"</td><td>2</td></tr>
+      </table>
+
+      <p style="font-family:'Archivo';font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-top:16px">Kompetenzbereiche (KC Musik, Sek I Niedersachsen)</p>
+      <div class="kc">
+        <span>Musik gestalten (Produktion): eigener Blues, Call &amp; Response, Synkopen klatschen</span>
+        <span>Musik hören &amp; beschreiben (Rezeption): Songanalyse, Jazz-Kriterien, Höraufgaben</span>
+        <span>Musik deuten &amp; einordnen (Reflexion): historischer &amp; gesellschaftlicher Kontext, Traditionslinie</span>
+      </div>
+      <p style="font-size:.9rem;margin-top:14px"><b>Fachliche Schwerpunkte:</b> Tonvorrat/Pentatonik · Hauptdreiklänge &amp; Kadenz (T–S–D) · 12-taktiges Blues-Schema · Bluenotes (kl.3, verm.5, kl.7) · Synkope/Swing · Septakkorde (Farbakkorde) · II–V–I. <br><b>Differenzierung:</b> Reveal-Lösungen als Hilfe oder Selbstkontrolle; Referate arbeitsteilig; Kompositionsaufgabe offen (Text-only bis vollständige Notation/Aufführung).</p>
+    </div>
+  </details>
+
+</div>
+
+<footer>Eine Lernreise durch afroamerikanische Musikgeschichte · Musik, Jahrgang 9 · zum selbstständigen Bearbeiten</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- PROGRESS ---------- */
+  var tasks = {}; // id -> done
+  function reg(id){ if(!(id in tasks)) tasks[id]=false; }
+  function done(id){ tasks[id]=true; updateProgress(); }
+  function updateProgress(){
+    var keys = Object.keys(tasks), total = keys.length, d=0;
+    keys.forEach(function(k){ if(tasks[k]) d++; });
+    var pct = total? Math.round(d/total*100):0;
+    document.getElementById('pbar').style.width = pct+'%';
+    document.getElementById('ptext').textContent = pct+'%';
+    if(pct===100){ var b=document.getElementById('banner'); if(b) b.classList.add('show'); }
+  }
+
+  /* ---------- QUIZ ---------- */
+  document.querySelectorAll('[data-quiz]').forEach(function(q,i){
+    var id='quiz'+i; reg(id);
+    var opts=q.querySelectorAll('.opt');
+    var fb=q.querySelector('.feedback');
+    opts.forEach(function(o){
+      o.addEventListener('click',function(){
+        if(o.disabled) return;
+        var correct=o.hasAttribute('data-correct');
+        opts.forEach(function(x){
+          x.disabled=true;
+          if(x.hasAttribute('data-correct')) x.classList.add('correct');
+        });
+        if(!correct) o.classList.add('wrong');
+        fb.textContent = correct ? '✔ Richtig! Sitzt.' : '✘ Nicht ganz – die richtige Antwort ist grün markiert.';
+        fb.className = 'feedback show '+(correct?'good':'bad');
+        done(id);
+      });
+    });
+  });
+
+  /* ---------- MATCH ---------- */
+  document.querySelectorAll('[data-match]').forEach(function(m,i){
+    var id='match'+i; reg(id);
+    var note=m.parentNode.querySelector('[data-matchnote]');
+    var chips=m.querySelectorAll('.chip');
+    var total=m.querySelectorAll('[data-side="l"] .chip').length;
+    var found=0, sel=null;
+    chips.forEach(function(c){
+      c.addEventListener('click',function(){
+        if(c.classList.contains('done')) return;
+        if(!sel){ sel=c; c.classList.add('sel'); return; }
+        if(sel===c){ c.classList.remove('sel'); sel=null; return; }
+        // need one from each side
+        var s1=sel.parentNode.getAttribute('data-side');
+        var s2=c.parentNode.getAttribute('data-side');
+        if(s1===s2){ sel.classList.remove('sel'); sel=c; c.classList.add('sel'); return; }
+        if(sel.getAttribute('data-key')===c.getAttribute('data-key')){
+          sel.classList.remove('sel'); sel.classList.add('done'); c.classList.add('done');
+          found++;
+          if(note) note.textContent=found+' / '+total+' Paaren gefunden'+(found===total?' — stark! ✔':'');
+          if(found===total) done(id);
+        }else{
+          var a=sel, b=c;
+          a.classList.remove('sel');
+          [a,b].forEach(function(x){ x.style.borderColor='var(--no)'; });
+          setTimeout(function(){ [a,b].forEach(function(x){ if(!x.classList.contains('done')) x.style.borderColor=''; }); },500);
+        }
+        sel=null;
+      });
+    });
+  });
+
+  /* ---------- BLUES SCHEMA BUILDER ---------- */
+  document.querySelectorAll('[data-builder]').forEach(function(b){
+    reg('builder'); 
+    var barsWrap=b.querySelector('.bars');
+    var solution=['C','C','C','C','F','F','C','C','G','F','C','C'];
+    var state=new Array(12).fill(null);
+    var chosen=null, activeBar=null;
+    for(var i=0;i<12;i++){
+      var bar=document.createElement('div');
+      bar.className='bar'; bar.setAttribute('data-idx',i);
+      bar.innerHTML='<small>'+(i+1)+'</small>';
+      barsWrap.appendChild(bar);
+    }
+    var pchips=b.querySelectorAll('.pchip');
+    pchips.forEach(function(p){
+      p.addEventListener('click',function(){
+        pchips.forEach(function(x){x.classList.remove('on');});
+        p.classList.add('on'); chosen=p.getAttribute('data-chord');
+      });
+    });
+    barsWrap.querySelectorAll('.bar').forEach(function(bar){
+      bar.addEventListener('click',function(){
+        if(!chosen){ flash(b,'Wähle zuerst oben einen Akkord.'); return; }
+        var idx=+bar.getAttribute('data-idx');
+        state[idx]=chosen;
+        bar.classList.remove('correct','incorrect');
+        bar.classList.add('filled');
+        bar.innerHTML='<small>'+(idx+1)+'</small>'+chosen;
+      });
+    });
+    b.querySelector('[data-checkbuilder]').addEventListener('click',function(){
+      if(state.indexOf(null)>-1){ flash(b,'Fülle zuerst alle 12 Takte.'); return; }
+      var right=0;
+      barsWrap.querySelectorAll('.bar').forEach(function(bar){
+        var idx=+bar.getAttribute('data-idx');
+        bar.classList.remove('filled');
+        if(state[idx]===solution[idx]){ bar.classList.add('correct'); right++; }
+        else bar.classList.add('incorrect');
+      });
+      var st=b.querySelector('[data-builderstatus]');
+      if(right===12){ st.textContent='✔ Perfekt – das ist das 12-taktige Blues-Schema!'; st.style.color='var(--ok)'; done('builder'); }
+      else { st.textContent=right+' / 12 Takten richtig. Rote Takte nochmal prüfen.'; st.style.color='var(--no)'; }
+    });
+    b.querySelector('[data-resetbuilder]').addEventListener('click',function(){
+      state=new Array(12).fill(null);
+      barsWrap.querySelectorAll('.bar').forEach(function(bar){
+        var idx=+bar.getAttribute('data-idx');
+        bar.className='bar'; bar.innerHTML='<small>'+(idx+1)+'</small>';
+      });
+      b.querySelector('[data-builderstatus]').textContent='';
+    });
+  });
+  function flash(scope,msg){
+    var st=scope.querySelector('[data-builderstatus]'); if(!st) return;
+    st.textContent=msg; st.style.color='var(--ink-soft)';
+  }
+
+  /* ---------- BLUENOTE PICKER ---------- */
+  document.querySelectorAll('[data-notes]').forEach(function(s){
+    reg('bluenotes');
+    var notes=s.querySelectorAll('.note');
+    notes.forEach(function(n){
+      n.addEventListener('click',function(){
+        if(n.classList.contains('right')||n.classList.contains('miss')) return;
+        n.classList.toggle('pick');
+      });
+    });
+    var wrap=s.parentNode;
+    wrap.querySelector('[data-checknotes]').addEventListener('click',function(){
+      var ok=true, picked=0;
+      notes.forEach(function(n){
+        var isBlue=n.hasAttribute('data-blue');
+        var isPick=n.classList.contains('pick');
+        if(isPick) picked++;
+        if(isBlue&&isPick){ n.classList.remove('pick'); n.classList.add('right'); }
+        else if(isBlue&&!isPick){ ok=false; }
+        else if(!isBlue&&isPick){ n.classList.remove('pick'); n.classList.add('miss'); ok=false; }
+      });
+      var st=wrap.querySelector('[data-notestatus]');
+      if(ok&&picked===3){ st.textContent='✔ Genau: kl. Terz, verm. Quinte, kl. Septime!'; st.style.color='var(--ok)'; done('bluenotes'); }
+      else { st.textContent='Noch nicht ganz – gesucht sind genau drei Töne. Grün = richtig, rot = keine Bluenote.'; st.style.color='var(--no)'; }
+    });
+    wrap.querySelector('[data-resetnotes]').addEventListener('click',function(){
+      notes.forEach(function(n){ n.className='note'+(n.hasAttribute('data-blue')?' ':' '); n.classList.remove('pick','right','miss'); });
+      wrap.querySelector('[data-notestatus]').textContent='';
+    });
+  });
+
+  /* ---------- REVEAL ---------- */
+  document.querySelectorAll('[data-reveal]').forEach(function(r){
+    var btn=r.querySelector('button'), sign=btn.querySelector('span');
+    btn.addEventListener('click',function(){
+      r.classList.toggle('open');
+      if(sign) sign.textContent=r.classList.contains('open')?'−':'+';
+    });
+  });
+
+  /* ---------- SELF CHECK ---------- */
+  document.querySelectorAll('[data-selfcheck]').forEach(function(list,i){
+    var id='self'+i; reg(id);
+    var items=list.querySelectorAll('li');
+    items.forEach(function(li){
+      li.addEventListener('click',function(){
+        li.classList.toggle('on');
+        li.querySelector('.box').textContent=li.classList.contains('on')?'✓':'';
+        var all=true; items.forEach(function(x){ if(!x.classList.contains('on')) all=false; });
+        if(all) done(id);
+      });
+    });
+  });
+
+  /* ---------- FINALE persistence (in-memory) + finish ---------- */
+  var store={};
+  document.querySelectorAll('[data-persist]').forEach(function(f){
+    f.addEventListener('input',function(){ store[f.getAttribute('data-persist')]=f.value; });
+  });
+  var finishBtn=document.querySelector('[data-finish]');
+  if(finishBtn){ reg('finale');
+    finishBtn.addEventListener('click',function(){
+      done('finale');
+      finishBtn.textContent='✔ Abgeschlossen';
+      finishBtn.style.background='var(--ok)';
+      var b=document.getElementById('banner'); if(b){ b.classList.add('show'); b.scrollIntoView({behavior: reduce?'auto':'smooth'}); }
+    });
+  }
+  var printBtn=document.querySelector('[data-print]');
+  if(printBtn) printBtn.addEventListener('click',function(){ window.print(); });
+
+  /* ---------- SCROLL SPY ---------- */
+  var links=document.querySelectorAll('.nav-links a');
+  var secs=document.querySelectorAll('.station');
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){ l.style.background=''; l.style.color=''; });
+          var active=document.querySelector('.nav-links a[href="#'+e.target.id+'"]');
+          if(active){ active.style.color='#fff';
+            active.style.background = e.target.id==='spirituals'?'var(--spir)':e.target.id==='blues'?'var(--blues)':e.target.id==='jazz'?'var(--jazz)':'var(--brass)';
+          }
+        }
+      });
+    },{rootMargin:'-45% 0px -50% 0px'});
+    secs.forEach(function(s){ obs.observe(s); });
+  }
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>
