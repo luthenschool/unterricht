@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dur &amp; Moll – Tonleitern hören und verstehen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12151f; --panel:#1b2030; --panel2:#232a3e; --panel3:#2c3450;
+    --ivory:#f3ede0; --text:#e7e6ef; --muted:#98a1ba; --line:rgba(255,255,255,.10);
+    --dur:#f0b23c; --dur-dim:rgba(240,178,60,.16);
+    --moll:#9385f0; --moll-dim:rgba(147,133,240,.16);
+    --good:#5ecb8c; --bad:#ec7b70;
+    --display:'Fraunces','Iowan Old Style','Palatino Linotype','Book Antiqua',Georgia,serif;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 620px at 78% -8%, rgba(147,133,240,.14), transparent 60%),
+      radial-gradient(900px 560px at 8% 4%, rgba(240,178,60,.10), transparent 55%),
+      var(--ink);
+    color:var(--text); font-family:var(--sans); line-height:1.55;
+    -webkit-font-smoothing:antialiased; padding:0 0 64px;
+  }
+  .wrap{max-width:940px; margin:0 auto; padding:0 20px}
+
+  /* Header */
+  header{padding:34px 0 10px}
+  .eyebrow{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); font-weight:600}
+  h1{font-family:var(--display); font-weight:600; font-size:clamp(30px,5.4vw,46px);
+     line-height:1.04; margin:.24em 0 .18em; letter-spacing:-.01em}
+  h1 .g{color:var(--dur)} h1 .m{color:var(--moll)}
+  .sub{color:var(--muted); max-width:60ch; font-size:15.5px}
+
+  /* Tabs */
+  nav.tabs{display:flex; gap:6px; margin:22px 0 10px; flex-wrap:wrap;
+    position:sticky; top:0; z-index:20; padding:12px 0;
+    background:linear-gradient(var(--ink) 72%, transparent)}
+  .tab{appearance:none; border:1px solid var(--line); background:var(--panel);
+    color:var(--text); font:600 15px/1 var(--sans); padding:11px 17px; border-radius:11px;
+    cursor:pointer; display:flex; align-items:center; gap:8px; transition:.18s}
+  .tab .n{font-family:var(--display); color:var(--muted); font-size:13px}
+  .tab:hover{border-color:rgba(255,255,255,.24)}
+  .tab[aria-selected="true"]{background:var(--panel3); border-color:transparent; box-shadow:0 0 0 1.5px var(--dur) inset}
+  .tab[aria-selected="true"] .n{color:var(--dur)}
+  .tab:focus-visible{outline:3px solid var(--moll); outline-offset:2px}
+
+  section.page{display:none; animation:fade .28s ease}
+  section.page.active{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:22px 22px 24px; margin:16px 0}
+  .card h2{font-family:var(--display); font-weight:600; font-size:22px; margin:0 0 4px}
+  .card .lead{color:var(--muted); font-size:14.5px; margin:0 0 16px}
+  .card h2 .badge{font:600 11px/1 var(--sans); letter-spacing:.14em; text-transform:uppercase;
+    vertical-align:middle; margin-left:10px; padding:5px 9px; border-radius:999px}
+  .badge-dur{background:var(--dur-dim); color:var(--dur)}
+  .badge-moll{background:var(--moll-dim); color:var(--moll)}
+
+  /* Controls */
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:6px 0 4px}
+  .chips{display:flex; gap:6px; flex-wrap:wrap}
+  .chip{border:1px solid var(--line); background:var(--panel2); color:var(--text);
+    padding:8px 12px; border-radius:10px; cursor:pointer; font:600 14px/1 var(--sans); transition:.15s}
+  .chip:hover{border-color:rgba(255,255,255,.26)}
+  .chip[aria-pressed="true"]{background:var(--dur); color:#20160a; border-color:transparent}
+  .chip.moll[aria-pressed="true"]{background:var(--moll); color:#150f2c}
+  .chip:focus-visible{outline:3px solid var(--moll); outline-offset:2px}
+  .btn{border:none; border-radius:11px; padding:12px 18px; font:700 15px/1 var(--sans);
+    cursor:pointer; display:inline-flex; align-items:center; gap:9px; transition:.15s}
+  .btn-play{background:var(--dur); color:#20160a}
+  .btn-play.moll{background:var(--moll); color:#160f2c}
+  .btn-play:hover{filter:brightness(1.06)}
+  .btn-ghost{background:var(--panel2); color:var(--text); border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.26)}
+  .btn:focus-visible{outline:3px solid var(--moll); outline-offset:2px}
+  .btn:active{transform:translateY(1px)}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:11px; overflow:hidden}
+  .seg button{appearance:none; border:none; background:transparent; color:var(--text);
+    padding:10px 16px; font:700 14px/1 var(--sans); cursor:pointer}
+  .seg button[aria-pressed="true"].d{background:var(--dur); color:#20160a}
+  .seg button[aria-pressed="true"].mo{background:var(--moll); color:#160f2c}
+
+  /* Piano */
+  .piano{position:relative; height:150px; margin:18px 0 8px; user-select:none;
+    display:flex; border-radius:10px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  .wk{position:relative; flex:1; background:linear-gradient(#fbf8f1,#efe8d8);
+    border-right:1px solid #cfc7b4; cursor:pointer; transition:background .12s}
+  .wk:last-child{border-right:none}
+  .wk:hover{background:linear-gradient(#fff,#f3ecdd)}
+  .wk.in{background:linear-gradient(#ffe6ad,#f6cf7d)}
+  .wk.in.moll{background:linear-gradient(#d7cffb,#b9adf3)}
+  .wk.root{box-shadow:inset 0 0 0 3px var(--dur)}
+  .wk.root.moll{box-shadow:inset 0 0 0 3px var(--moll)}
+  .wk .lab{position:absolute; bottom:8px; left:0; right:0; text-align:center;
+    font:700 12px/1 var(--sans); color:#3a3427; pointer-events:none}
+  .bk{position:absolute; top:0; width:5.2%; height:62%; background:linear-gradient(#2a2f3e,#0e1017);
+    border-radius:0 0 5px 5px; cursor:pointer; z-index:3; box-shadow:0 4px 6px rgba(0,0,0,.4)}
+  .bk:hover{background:linear-gradient(#3a4155,#14171f)}
+  .bk.in{background:linear-gradient(#f0b23c,#c98a1e)}
+  .bk.in.moll{background:linear-gradient(#9385f0,#6b5bd0)}
+  .bk.root{box-shadow:0 0 0 3px var(--dur), 0 4px 6px rgba(0,0,0,.4)}
+  .bk.root.moll{box-shadow:0 0 0 3px var(--moll), 0 4px 6px rgba(0,0,0,.4)}
+
+  /* Step / note strip */
+  .steps{display:flex; gap:6px; flex-wrap:wrap; margin-top:14px}
+  .note{min-width:52px; text-align:center; border:1px solid var(--line); border-radius:10px;
+    padding:9px 6px; background:var(--panel2)}
+  .note b{display:block; font:700 16px/1.2 var(--sans)}
+  .note .deg{font-size:11px; color:var(--muted)}
+  .gap{display:flex; align-items:center; justify-content:center; min-width:30px}
+  .gap span{font:700 12px/1 var(--sans); padding:5px 8px; border-radius:8px;
+    background:var(--panel3); color:var(--muted)}
+  .gap.half span{background:var(--dur-dim); color:var(--dur)}
+  .steps.moll .gap.half span{background:var(--moll-dim); color:var(--moll)}
+
+  .callout{background:var(--panel2); border-left:3px solid var(--dur); border-radius:10px;
+    padding:12px 15px; margin-top:14px; font-size:14.5px; color:var(--text)}
+  .callout.moll{border-left-color:var(--moll)}
+  .callout b{color:var(--ivory)}
+
+  /* Quiz */
+  .q-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
+  .score{font:600 14px/1 var(--sans); color:var(--muted)}
+  .score b{color:var(--dur); font-size:17px; font-family:var(--display)}
+  .prompt{font-family:var(--display); font-size:20px; margin:14px 0 6px}
+  .opts{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-top:8px}
+  .opt{border:1px solid var(--line); background:var(--panel2); color:var(--text);
+    padding:15px 12px; border-radius:12px; cursor:pointer; font:700 16px/1 var(--sans); transition:.14s}
+  .opt:hover{border-color:rgba(255,255,255,.3); transform:translateY(-1px)}
+  .opt:focus-visible{outline:3px solid var(--moll); outline-offset:2px}
+  .opt.correct{background:rgba(94,203,140,.18); border-color:var(--good); color:#c9f4dc}
+  .opt.wrong{background:rgba(236,123,112,.16); border-color:var(--bad); color:#fbd5d0}
+  .opt:disabled{cursor:default}
+  .feedback{margin-top:14px; font-size:14.5px; min-height:22px}
+  .feedback.ok{color:var(--good)} .feedback.no{color:var(--bad)}
+
+  /* Circle of fifths */
+  .circle-wrap{display:grid; grid-template-columns:340px 1fr; gap:24px; align-items:center}
+  @media(max-width:720px){.circle-wrap{grid-template-columns:1fr}}
+  .circle{position:relative; width:320px; height:320px; margin:6px auto; border-radius:50%;
+    background:radial-gradient(circle at 50% 42%, var(--panel3), var(--panel2));
+    border:1px solid var(--line)}
+  .cx{position:absolute; left:50%; top:50%; width:60px; height:60px; margin:-30px 0 0 -30px;
+    border-radius:50%; border:1px dashed var(--line); background:var(--panel);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font:600 11px/1.2 var(--sans); color:var(--muted)}
+  .cf{position:absolute; left:50%; top:50%; width:60px; height:60px; margin:-30px 0 0 -30px}
+  .cf button{width:56px; height:56px; border-radius:50%; border:1px solid var(--line);
+    background:var(--panel); color:var(--text); font:700 15px/1 var(--sans); cursor:pointer; transition:.15s}
+  .cf button:hover{border-color:var(--dur); color:var(--dur)}
+  .cf button[aria-pressed="true"]{background:var(--dur); color:#20160a; border-color:transparent}
+  .cf button:focus-visible{outline:3px solid var(--moll); outline-offset:2px}
+  .cinfo{background:var(--panel2); border-radius:14px; padding:18px; border:1px solid var(--line); min-height:150px}
+  .cinfo .tt{font-family:var(--display); font-size:26px; color:var(--dur)}
+  .cinfo .kv{display:flex; gap:8px; margin:9px 0; font-size:14.5px}
+  .cinfo .kv span:first-child{color:var(--muted); min-width:120px}
+
+  /* Detective sorting */
+  .songs{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px}
+  @media(max-width:620px){.songs{grid-template-columns:1fr}}
+  .song{display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background:var(--panel2); border:1px solid var(--line); border-radius:11px; padding:11px 13px}
+  .song .t{font-size:14px}
+  .song .t small{display:block; color:var(--muted); font-size:12px}
+  .song .pick{display:flex; gap:5px}
+  .mini{border:1px solid var(--line); background:var(--panel); color:var(--muted);
+    border-radius:8px; padding:6px 9px; cursor:pointer; font:700 12px/1 var(--sans)}
+  .mini.d[aria-pressed="true"]{background:var(--dur); color:#20160a; border-color:transparent}
+  .mini.mo[aria-pressed="true"]{background:var(--moll); color:#160f2c; border-color:transparent}
+  .song.right{box-shadow:inset 0 0 0 1.5px var(--good)}
+  .song.rong{box-shadow:inset 0 0 0 1.5px var(--bad)}
+
+  .merk{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media(max-width:620px){.merk{grid-template-columns:1fr}}
+  .merk .m{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:15px}
+  .merk .m .k{font:600 12px/1 var(--sans); letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+  .merk .m .s{font-family:var(--display); font-size:18px; margin-top:7px; color:var(--ivory)}
+  .merk .m .r{color:var(--muted); font-size:13px; margin-top:4px}
+
+  footer{color:var(--muted); font-size:12.5px; text-align:center; margin-top:30px}
+  .hint{color:var(--muted); font-size:13px; margin-top:10px}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Interaktive Lernumgebung · Musik · Jahrgang 7</div>
+    <h1>Tonleitern hören: <span class="g">Dur</span> &amp; <span class="m">Moll</span></h1>
+    <p class="sub">Bau dir Tonleitern zusammen, hör den Unterschied und teste dich selbst. Alle Töne werden direkt im Browser erzeugt – Kopfhörer oder Boxen an.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Bereiche">
+    <button class="tab" role="tab" aria-selected="true" data-tab="lernen"><span class="n">01</span> Lernen</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="ueben"><span class="n">02</span> Üben</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="vertiefen"><span class="n">03</span> Vertiefen</button>
+  </nav>
+
+  <!-- ================= LERNEN ================= -->
+  <section class="page active" id="lernen" role="tabpanel">
+    <div class="card">
+      <h2>Die Dur-Tonleiter bauen <span class="badge badge-dur">Erarbeitung</span></h2>
+      <p class="lead">Wähle eine Tonart. Die Tastatur zeigt dir die Töne, die goldenen Kästchen markieren die zwei Halbtonschritte – immer zwischen dem 3.&nbsp;&amp;&nbsp;4. und dem 7.&nbsp;&amp;&nbsp;8. Ton.</p>
+      <div class="chips" id="durPicker" role="group" aria-label="Dur-Tonart wählen"></div>
+      <div class="piano" id="pianoL" aria-hidden="true"></div>
+      <div class="steps" id="stepsL"></div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn btn-play" id="playL">▶ Tonleiter abspielen</button>
+        <button class="btn btn-ghost" id="playLslow">🐢 Langsam</button>
+        <span class="hint" id="vzL"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Dur oder Moll? Ein Ton entscheidet <span class="badge badge-moll">Vertiefung</span></h2>
+      <p class="lead">Gleicher Grundton, gleiche Tastatur – nur der <b>3. Ton</b> (die Terz) wandert einen Halbton nach unten. Aus der großen wird eine kleine Terz, und die Stimmung kippt.</p>
+      <div class="row">
+        <div class="seg" role="group" aria-label="Tongeschlecht">
+          <button class="d" id="segDur" aria-pressed="true">Dur</button>
+          <button class="mo" id="segMoll" aria-pressed="false">Moll</button>
+        </div>
+        <div class="chips" id="cmpPicker" role="group" aria-label="Grundton wählen"></div>
+      </div>
+      <div class="piano" id="pianoC" aria-hidden="true"></div>
+      <div class="steps" id="stepsC"></div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn btn-play" id="playC">▶ Abspielen</button>
+        <button class="btn btn-ghost" id="playTerz">Nur die Terz hören</button>
+      </div>
+      <div class="callout" id="calloutC"><b>Dur</b> klingt meist hell und offen. Die große Terz (z.&nbsp;B. C&nbsp;→&nbsp;E) macht den Unterschied.</div>
+    </div>
+  </section>
+
+  <!-- ================= ÜBEN ================= -->
+  <section class="page" id="ueben" role="tabpanel">
+    <div class="card">
+      <div class="q-head">
+        <h2>Vorzeichen-Quiz</h2>
+        <div class="score">Punkte <b id="s1">0</b> / <span id="t1">0</span></div>
+      </div>
+      <p class="lead">Wie viele Vorzeichen (♯ oder ♭) hat diese Dur-Tonleiter?</p>
+      <div class="prompt" id="q1prompt">…</div>
+      <div class="opts" id="q1opts"></div>
+      <div class="feedback" id="q1fb"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-ghost" id="q1play">▶ Tonleiter anhören</button>
+        <button class="btn btn-play" id="q1next" hidden>Nächste →</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <h2>Gehör-Training: Dur oder Moll? <span class="badge badge-moll">Hören</span></h2>
+        <div class="score">Serie <b id="s2">0</b> · beste <span id="s2b">0</span></div>
+      </div>
+      <p class="lead">Klick auf „Akkord abspielen“ und entscheide, was du hörst. Ein Klick, ein Urteil.</p>
+      <div class="row">
+        <button class="btn btn-ghost" id="q2play">🔊 Akkord abspielen</button>
+        <button class="opt" id="q2dur" style="max-width:150px" disabled>Dur</button>
+        <button class="opt moll-o" id="q2moll" style="max-width:150px" disabled>Moll</button>
+      </div>
+      <div class="feedback" id="q2fb">Zuerst abspielen.</div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <h2>Halbton oder Ganzton?</h2>
+        <div class="score">Punkte <b id="s3">0</b> / <span id="t3">0</span></div>
+      </div>
+      <p class="lead">Liegt zwischen diesen beiden Tönen ein Halbtonschritt (keine Taste dazwischen) oder ein Ganztonschritt (eine Taste dazwischen)?</p>
+      <div class="prompt" id="q3prompt">…</div>
+      <div class="opts" id="q3opts" style="max-width:360px">
+        <button class="opt" data-a="halb">Halbton</button>
+        <button class="opt" data-a="ganz">Ganzton</button>
+      </div>
+      <div class="feedback" id="q3fb"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn btn-ghost" id="q3play">▶ Beide Töne hören</button>
+        <button class="btn btn-play" id="q3next" hidden>Nächste →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= VERTIEFEN ================= -->
+  <section class="page" id="vertiefen" role="tabpanel">
+    <div class="card">
+      <h2>Quintenzirkel zum Anfassen</h2>
+      <p class="lead">Klick auf eine Tonart. Im Uhrzeigersinn kommt jeweils ein ♯ dazu, gegen den Uhrzeigersinn ein ♭. Rechts siehst du die Töne, die Vorzeichen und die parallele Moll-Tonart – und kannst sie anhören.</p>
+      <div class="circle-wrap">
+        <div class="circle" id="circle"></div>
+        <div class="cinfo" id="cinfo">
+          <div class="tt" id="ci-name">C-Dur</div>
+          <div class="kv"><span>Vorzeichen</span><b id="ci-vz">0</b></div>
+          <div class="kv"><span>Töne</span><b id="ci-notes">C D E F G A H</b></div>
+          <div class="kv"><span>Paralleltonart</span><b id="ci-rel">a-Moll</b></div>
+          <button class="btn btn-play" id="ci-play" style="margin-top:8px">▶ Anhören</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="q-head">
+        <h2>Song-Detektiv</h2>
+        <div class="score" id="sdScore"></div>
+      </div>
+      <p class="lead">Was denkst du: steht der Song eher in Dur (hell) oder Moll (dunkel)? Tippe, dann prüfe deine Lösung. Tipp: Stimmung ist ein Indiz – aber Tempo, Text und Instrumente können täuschen!</p>
+      <div class="songs" id="songs"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn btn-play" id="sdCheck">Lösung prüfen</button>
+        <button class="btn btn-ghost" id="sdReset">Zurücksetzen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Merksätze &amp; Eselsbrücken</h2>
+      <p class="lead">Und dann: erfinde deinen eigenen Satz – selbst ausgedachte bleiben am besten hängen.</p>
+      <div class="merk">
+        <div class="m">
+          <div class="k">Kreuz-Tonarten ♯</div>
+          <div class="s">Geh Du Alter Esel, Hol Fisch</div>
+          <div class="r">G – D – A – E – H – Fis (– Cis)</div>
+        </div>
+        <div class="m">
+          <div class="k">B-Tonarten ♭</div>
+          <div class="s">Frische Brötchen Essen Alle Der Genießer</div>
+          <div class="r">F – B – Es – As – Des – Ges (– Ces)</div>
+        </div>
+        <div class="m">
+          <div class="k">Aufbau Dur</div>
+          <div class="s">Ganz–Ganz–<span style="color:var(--dur)">Halb</span>–Ganz–Ganz–Ganz–<span style="color:var(--dur)">Halb</span></div>
+          <div class="r">Halbschritte zwischen 3–4 und 7–8</div>
+        </div>
+        <div class="m">
+          <div class="k">Aufbau Moll (natürlich)</div>
+          <div class="s">Ganz–<span style="color:var(--moll)">Halb</span>–Ganz–Ganz–<span style="color:var(--moll)">Halb</span>–Ganz–Ganz</div>
+          <div class="r">Halbschritte zwischen 2–3 und 5–6</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Alle Klänge werden live per Web Audio erzeugt · für den Musikunterricht Jg. 7</footer>
+</div>
+
+<script>
+/* ---------- Audio ---------- */
+let actx=null;
+function ac(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); return actx; }
+const m2f = m => 440*Math.pow(2,(m-69)/12);
+function tone(freq,t0,dur,vol){
+  const c=ac(), o=c.createOscillator(), g=c.createGain(), lp=c.createBiquadFilter();
+  o.type='triangle'; o.frequency.value=freq;
+  lp.type='lowpass'; lp.frequency.value=2600;
+  o.connect(lp); lp.connect(g); g.connect(c.destination);
+  const v=vol||0.2;
+  g.gain.setValueAtTime(0,t0);
+  g.gain.linearRampToValueAtTime(v,t0+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0008,t0+dur);
+  o.start(t0); o.stop(t0+dur+0.05);
+}
+function playSeq(tonic,offsets,noteDur=0.42,gap=0.44){
+  const c=ac(), t=c.currentTime+0.05;
+  offsets.forEach((off,i)=>tone(m2f(tonic+off),t+i*gap,noteDur+0.05,0.2));
+}
+function playChord(root,quality){
+  const c=ac(), t=c.currentTime+0.05, offs=quality==='dur'?[0,4,7]:[0,3,7];
+  offs.forEach(o=>tone(m2f(root+o),t,1.4,0.16));
+}
+const DUR_OFF=[0,2,4,5,7,9,11,12], MOLL_OFF=[0,2,3,5,7,8,10,12];
+
+/* ---------- Data ---------- */
+const DUR={
+  'C-Dur':{tonic:60,vz:'0',notes:['C','D','E','F','G','A','H'],rel:'a-Moll'},
+  'G-Dur':{tonic:67,vz:'1 ♯ (fis)',notes:['G','A','H','C','D','E','Fis'],rel:'e-Moll'},
+  'D-Dur':{tonic:62,vz:'2 ♯',notes:['D','E','Fis','G','A','H','Cis'],rel:'h-Moll'},
+  'A-Dur':{tonic:69,vz:'3 ♯',notes:['A','H','Cis','D','E','Fis','Gis'],rel:'fis-Moll'},
+  'E-Dur':{tonic:64,vz:'4 ♯',notes:['E','Fis','Gis','A','H','Cis','Dis'],rel:'cis-Moll'},
+  'H-Dur':{tonic:71,vz:'5 ♯',notes:['H','Cis','Dis','E','Fis','Gis','Ais'],rel:'gis-Moll'},
+  'Fis-Dur':{tonic:66,vz:'6 ♯',notes:['Fis','Gis','Ais','H','Cis','Dis','Eis'],rel:'dis-Moll'},
+  'F-Dur':{tonic:65,vz:'1 ♭ (b)',notes:['F','G','A','B','C','D','E'],rel:'d-Moll'},
+  'B-Dur':{tonic:70,vz:'2 ♭',notes:['B','C','D','Es','F','G','A'],rel:'g-Moll'},
+  'Es-Dur':{tonic:63,vz:'3 ♭',notes:['Es','F','G','As','B','C','D'],rel:'c-Moll'},
+  'As-Dur':{tonic:68,vz:'4 ♭',notes:['As','B','C','Des','Es','F','G'],rel:'f-Moll'},
+  'Des-Dur':{tonic:61,vz:'5 ♭',notes:['Des','Es','F','Ges','As','B','C'],rel:'b-Moll'},
+};
+const DUR_KEYS=Object.keys(DUR);
+// order for circle of fifths
+const CIRCLE=['C-Dur','G-Dur','D-Dur','A-Dur','E-Dur','H-Dur','Fis-Dur','Des-Dur','As-Dur','Es-Dur','B-Dur','F-Dur'];
+// two fixed tonics for the Dur/Moll comparison, with correct spelling
+const CMP={
+  'C':{tonic:60,dur:['C','D','E','F','G','A','H'],moll:['C','D','Es','F','G','As','B'],terzD:'E',terzM:'Es'},
+  'A':{tonic:69,dur:['A','H','Cis','D','E','Fis','Gis'],moll:['A','H','C','D','E','F','G'],terzD:'Cis',terzM:'C'},
+  'G':{tonic:67,dur:['G','A','H','C','D','E','Fis'],moll:['G','A','B','C','D','Es','F'],terzD:'H',terzM:'B'},
+};
+
+/* ---------- Piano builder ---------- */
+const WHITE=[0,2,4,5,7,9,11]; // semitone within octave that are white
+const BLACKAT={0:1,1:3,3:6,4:8,5:10}; // white index -> black semitone after it (rough); we compute directly
+function buildPiano(el, lowMidi, octaves){
+  el.innerHTML='';
+  const whites=[]; const total=octaves;
+  // create white keys
+  const whiteMidis=[];
+  for(let o=0;o<total;o++){ for(const s of WHITE){ whiteMidis.push(lowMidi+o*12+s); } }
+  whiteMidis.push(lowMidi+total*12); // closing C
+  whiteMidis.forEach(mid=>{
+    const k=document.createElement('div'); k.className='wk'; k.dataset.midi=mid;
+    const names={0:'C',2:'D',4:'E',5:'F',7:'G',9:'A',11:'H'};
+    const lab=document.createElement('div'); lab.className='lab'; lab.textContent=names[((mid%12)+12)%12]||'';
+    k.appendChild(lab); el.appendChild(k);
+    k.addEventListener('click',()=>tone(m2f(mid),ac().currentTime+0.01,0.5,0.22));
+  });
+  // black keys positioned relative to white key count
+  const nW=whiteMidis.length; const wPct=100/nW;
+  const blackSemis=[1,3,6,8,10];
+  for(let o=0;o<total;o++){
+    // index of white keys before each black
+    const map={1:0,3:1,6:3,8:4,10:5}; // black semitone -> white index within octave
+    blackSemis.forEach(bs=>{
+      const mid=lowMidi+o*12+bs;
+      const whiteIdxInOct=map[bs];
+      const globalWhiteIdx=o*7+whiteIdxInOct;
+      const b=document.createElement('div'); b.className='bk'; b.dataset.midi=mid;
+      b.style.left=`calc(${(globalWhiteIdx+1)*wPct}% - 2.6%)`;
+      el.appendChild(b);
+      b.addEventListener('click',(e)=>{e.stopPropagation(); tone(m2f(mid),ac().currentTime+0.01,0.5,0.22);});
+    });
+  }
+}
+function highlight(el, midis, tonic, moll){
+  el.querySelectorAll('.wk,.bk').forEach(k=>{
+    k.classList.remove('in','moll','root');
+    const mid=+k.dataset.midi;
+    if(midis.includes(mid)){ k.classList.add('in'); if(moll) k.classList.add('moll'); }
+    if(mid===tonic || mid===tonic+12){ if(midis.includes(mid)){k.classList.add('root'); if(moll)k.classList.add('moll');} }
+  });
+}
+function stepStrip(el, notes, offsets, moll){
+  el.className='steps'+(moll?' moll':'');
+  el.innerHTML='';
+  const full=notes.concat([notes[0]]); // 8 incl octave
+  for(let i=0;i<full.length;i++){
+    const n=document.createElement('div'); n.className='note';
+    n.innerHTML=`<b>${full[i]}</b><span class="deg">${i+1}.</span>`;
+    el.appendChild(n);
+    if(i<full.length-1){
+      const d=offsets[i+1]-offsets[i];
+      const g=document.createElement('div'); g.className='gap'+(d===1?' half':'');
+      g.innerHTML=`<span>${d===1?'½':'1'}</span>`;
+      el.appendChild(g);
+    }
+  }
+}
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll('.tab').forEach(tb=>{
+  tb.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected','false'));
+    tb.setAttribute('aria-selected','true');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(tb.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- LERNEN: Dur builder ---------- */
+const pianoL=document.getElementById('pianoL'); buildPiano(pianoL,60,2);
+let curDur='C-Dur';
+function renderDur(){
+  const d=DUR[curDur]; const mids=DUR_OFF.map(o=>d.tonic+o);
+  highlight(pianoL,mids,d.tonic,false);
+  stepStrip(document.getElementById('stepsL'),d.notes,DUR_OFF,false);
+  document.getElementById('vzL').textContent='Vorzeichen: '+d.vz;
+}
+const durPicker=document.getElementById('durPicker');
+DUR_KEYS.forEach(k=>{
+  const c=document.createElement('button'); c.className='chip'; c.textContent=k;
+  c.setAttribute('aria-pressed', k===curDur?'true':'false');
+  c.addEventListener('click',()=>{ curDur=k; durPicker.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false')); c.setAttribute('aria-pressed','true'); renderDur(); });
+  durPicker.appendChild(c);
+});
+renderDur();
+document.getElementById('playL').addEventListener('click',()=>playSeq(DUR[curDur].tonic,DUR_OFF));
+document.getElementById('playLslow').addEventListener('click',()=>playSeq(DUR[curDur].tonic,DUR_OFF,0.6,0.66));
+
+/* ---------- LERNEN: Dur/Moll comparison ---------- */
+const pianoC=document.getElementById('pianoC'); buildPiano(pianoC,60,2);
+let cmpRoot='C', cmpMoll=false;
+function renderCmp(){
+  const d=CMP[cmpRoot]; const offs=cmpMoll?MOLL_OFF:DUR_OFF;
+  const mids=offs.map(o=>d.tonic+o);
+  highlight(pianoC,mids,d.tonic,cmpMoll);
+  stepStrip(document.getElementById('stepsC'), cmpMoll?d.moll:d.dur, offs, cmpMoll);
+  const co=document.getElementById('calloutC');
+  co.className='callout'+(cmpMoll?' moll':'');
+  co.innerHTML=cmpMoll
+    ? `<b>Moll</b> klingt meist dunkler und weicher. Der 3. Ton ist jetzt <b>${d.terzM}</b> statt ${d.terzD} – eine kleine Terz.`
+    : `<b>Dur</b> klingt meist hell und offen. Der 3. Ton ist <b>${d.terzD}</b> – eine große Terz.`;
+  document.getElementById('playC').className='btn btn-play'+(cmpMoll?' moll':'');
+}
+const cmpPicker=document.getElementById('cmpPicker');
+Object.keys(CMP).forEach(r=>{
+  const c=document.createElement('button'); c.className='chip'; c.textContent='Grundton '+r;
+  c.setAttribute('aria-pressed', r===cmpRoot?'true':'false');
+  c.addEventListener('click',()=>{ cmpRoot=r; cmpPicker.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false')); c.setAttribute('aria-pressed','true'); renderCmp(); });
+  cmpPicker.appendChild(c);
+});
+function setMoll(v){
+  cmpMoll=v;
+  document.getElementById('segDur').setAttribute('aria-pressed',v?'false':'true');
+  document.getElementById('segMoll').setAttribute('aria-pressed',v?'true':'false');
+  cmpPicker.querySelectorAll('.chip').forEach(x=>x.classList.toggle('moll',v));
+  renderCmp();
+}
+document.getElementById('segDur').addEventListener('click',()=>setMoll(false));
+document.getElementById('segMoll').addEventListener('click',()=>setMoll(true));
+document.getElementById('playC').addEventListener('click',()=>playSeq(CMP[cmpRoot].tonic,cmpMoll?MOLL_OFF:DUR_OFF));
+document.getElementById('playTerz').addEventListener('click',()=>{
+  const d=CMP[cmpRoot], off=cmpMoll?3:4, t=ac().currentTime+0.05;
+  tone(m2f(d.tonic),t,0.6,0.2); tone(m2f(d.tonic+off),t+0.5,0.8,0.2);
+});
+renderCmp();
+
+/* ---------- ÜBEN Q1: Vorzeichen ---------- */
+let s1=0,t1=0,q1ans=null;
+function newQ1(){
+  const k=DUR_KEYS[Math.floor(Math.random()*DUR_KEYS.length)];
+  q1ans=k; const d=DUR[k];
+  document.getElementById('q1prompt').textContent=k+' – wie viele Vorzeichen?';
+  const correct=parseInt(d.vz)||0;
+  const set=new Set([correct]);
+  while(set.size<4){ let n=Math.floor(Math.random()*7); set.add(n); }
+  const opts=[...set].sort((a,b)=>a-b);
+  const box=document.getElementById('q1opts'); box.innerHTML='';
+  opts.forEach(n=>{
+    const b=document.createElement('button'); b.className='opt'; b.textContent=n;
+    b.addEventListener('click',()=>{
+      box.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+      t1++; 
+      if(n===correct){ b.classList.add('correct'); s1++; document.getElementById('q1fb').className='feedback ok'; document.getElementById('q1fb').textContent='Richtig! '+k+' hat '+d.vz+'.'; }
+      else{ b.classList.add('wrong'); box.querySelectorAll('.opt').forEach(x=>{if(+x.textContent===correct)x.classList.add('correct');}); document.getElementById('q1fb').className='feedback no'; document.getElementById('q1fb').textContent='Nicht ganz – '+k+' hat '+d.vz+'.'; }
+      document.getElementById('s1').textContent=s1; document.getElementById('t1').textContent=t1;
+      document.getElementById('q1next').hidden=false;
+    });
+    box.appendChild(b);
+  });
+  document.getElementById('q1fb').textContent=''; document.getElementById('q1next').hidden=true;
+}
+document.getElementById('q1play').addEventListener('click',()=>{ if(q1ans) playSeq(DUR[q1ans].tonic,DUR_OFF); });
+document.getElementById('q1next').addEventListener('click',newQ1);
+newQ1();
+
+/* ---------- ÜBEN Q2: Dur/Moll Gehör ---------- */
+let s2=0,s2best=0,q2q=null,q2open=false;
+function newQ2(){
+  const roots=[60,62,64,65,67,69]; const r=roots[Math.floor(Math.random()*roots.length)];
+  const qual=Math.random()<0.5?'dur':'moll';
+  q2q={r,qual}; q2open=true;
+  document.getElementById('q2dur').disabled=false; document.getElementById('q2moll').disabled=false;
+  document.getElementById('q2dur').classList.remove('correct','wrong');
+  document.getElementById('q2moll').classList.remove('correct','wrong');
+  playChord(r,qual);
+}
+function answerQ2(pick){
+  if(!q2q||!q2open) return; q2open=false;
+  const durB=document.getElementById('q2dur'), mollB=document.getElementById('q2moll');
+  durB.disabled=true; mollB.disabled=true;
+  const correctBtn = q2q.qual==='dur'?durB:mollB;
+  const pickBtn = pick==='dur'?durB:mollB;
+  const fb=document.getElementById('q2fb');
+  if(pick===q2q.qual){ pickBtn.classList.add('correct'); s2++; if(s2>s2best)s2best=s2; fb.className='feedback ok'; fb.textContent='Richtig – das war '+(q2q.qual==='dur'?'Dur':'Moll')+'! Weiter für die nächste Serie.'; }
+  else{ pickBtn.classList.add('wrong'); correctBtn.classList.add('correct'); s2=0; fb.className='feedback no'; fb.textContent='Das war '+(q2q.qual==='dur'?'Dur':'Moll')+'. Serie zurück auf 0 – nochmal hören!'; }
+  document.getElementById('s2').textContent=s2; document.getElementById('s2b').textContent=s2best;
+}
+document.getElementById('q2play').addEventListener('click',()=>{ if(q2q&&q2open) playChord(q2q.r,q2q.qual); else newQ2(); });
+document.getElementById('q2dur').addEventListener('click',()=>answerQ2('dur'));
+document.getElementById('q2moll').addEventListener('click',()=>answerQ2('moll'));
+
+/* ---------- ÜBEN Q3: Halbton/Ganzton ---------- */
+let s3=0,tt3=0,q3=null;
+function newQ3(){
+  const base=60+Math.floor(Math.random()*11);
+  const d=Math.random()<0.5?1:2;
+  q3={a:base,b:base+d,ans:d===1?'halb':'ganz'};
+  const nm=mid=>{const names={0:'C',1:'Cis/Des',2:'D',3:'Dis/Es',4:'E',5:'F',6:'Fis/Ges',7:'G',8:'Gis/As',9:'A',10:'Ais/B',11:'H'}; return names[((mid%12)+12)%12];};
+  document.getElementById('q3prompt').textContent=nm(q3.a)+'  →  '+nm(q3.b);
+  document.getElementById('q3fb').textContent='';
+  document.getElementById('q3opts').querySelectorAll('.opt').forEach(x=>{x.disabled=false;x.classList.remove('correct','wrong');});
+  document.getElementById('q3next').hidden=true;
+}
+document.getElementById('q3opts').querySelectorAll('.opt').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    if(!q3) return;
+    document.getElementById('q3opts').querySelectorAll('.opt').forEach(x=>x.disabled=true);
+    tt3++; const fb=document.getElementById('q3fb');
+    if(btn.dataset.a===q3.ans){ btn.classList.add('correct'); s3++; fb.className='feedback ok'; fb.textContent='Richtig!'; }
+    else{ btn.classList.add('wrong'); document.getElementById('q3opts').querySelector(`[data-a="${q3.ans}"]`).classList.add('correct'); fb.className='feedback no'; fb.textContent='Es war ein '+(q3.ans==='halb'?'Halbtonschritt':'Ganztonschritt')+'.'; }
+    document.getElementById('s3').textContent=s3; document.getElementById('t3').textContent=tt3;
+    document.getElementById('q3next').hidden=false;
+  });
+});
+document.getElementById('q3play').addEventListener('click',()=>{ if(q3){const t=ac().currentTime+0.05; tone(m2f(q3.a),t,0.5,0.2); tone(m2f(q3.b),t+0.5,0.7,0.2);} });
+document.getElementById('q3next').addEventListener('click',newQ3);
+newQ3();
+
+/* ---------- VERTIEFEN: Quintenzirkel ---------- */
+const circle=document.getElementById('circle');
+const R=118;
+CIRCLE.forEach((k,i)=>{
+  const ang=i*30-90; // start at top
+  const wrap=document.createElement('div'); wrap.className='cf';
+  const x=Math.cos(ang*Math.PI/180)*R, y=Math.sin(ang*Math.PI/180)*R;
+  wrap.style.transform=`translate(${x}px,${y}px)`;
+  const b=document.createElement('button'); b.textContent=k.replace('-Dur',''); b.title=k;
+  b.setAttribute('aria-pressed', i===0?'true':'false');
+  b.addEventListener('click',()=>{ selectCircle(k); circle.querySelectorAll('.cf button').forEach(x=>x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); });
+  wrap.appendChild(b); circle.appendChild(wrap);
+});
+const cxx=document.createElement('div'); cxx.className='cx'; cxx.textContent='Quinten­zirkel'; circle.appendChild(cxx);
+let ciCur='C-Dur';
+function selectCircle(k){
+  ciCur=k; const d=DUR[k];
+  document.getElementById('ci-name').textContent=k;
+  document.getElementById('ci-vz').textContent=d.vz;
+  document.getElementById('ci-notes').textContent=d.notes.join(' ');
+  document.getElementById('ci-rel').textContent=d.rel;
+}
+document.getElementById('ci-play').addEventListener('click',()=>playSeq(DUR[ciCur].tonic,DUR_OFF));
+selectCircle('C-Dur');
+
+/* ---------- VERTIEFEN: Song-Detektiv ---------- */
+const SONGS=[
+  {t:'Coldplay – Viva la Vida',a:'dur'},
+  {t:'The Cranberries – Zombie',a:'moll'},
+  {t:'The Beatles – Here Comes the Sun',a:'dur'},
+  {t:'George Michael – Careless Whisper',a:'moll'},
+  {t:'Katrina & The Waves – Walking on Sunshine',a:'dur'},
+  {t:'Billie Eilish – bad guy',a:'moll'},
+];
+const songsBox=document.getElementById('songs'); let sdPicks={};
+function renderSongs(){
+  songsBox.innerHTML=''; sdPicks={};
+  SONGS.forEach((s,i)=>{
+    const el=document.createElement('div'); el.className='song'; el.dataset.i=i;
+    el.innerHTML=`<div class="t">${s.t}</div>`;
+    const pick=document.createElement('div'); pick.className='pick';
+    ['dur','moll'].forEach(q=>{
+      const btn=document.createElement('button'); btn.className='mini '+(q==='dur'?'d':'mo'); btn.textContent=q==='dur'?'Dur':'Moll';
+      btn.setAttribute('aria-pressed','false');
+      btn.addEventListener('click',()=>{ sdPicks[i]=q; pick.querySelectorAll('.mini').forEach(x=>x.setAttribute('aria-pressed','false')); btn.setAttribute('aria-pressed','true'); el.classList.remove('right','rong'); });
+      pick.appendChild(btn);
+    });
+    el.appendChild(pick); songsBox.appendChild(el);
+  });
+  document.getElementById('sdScore').textContent='';
+}
+document.getElementById('sdCheck').addEventListener('click',()=>{
+  let ok=0,done=0;
+  SONGS.forEach((s,i)=>{
+    const el=songsBox.querySelector(`[data-i="${i}"]`); el.classList.remove('right','rong');
+    if(sdPicks[i]){ done++; if(sdPicks[i]===s.a){ok++; el.classList.add('right');} else el.classList.add('rong'); }
+  });
+  document.getElementById('sdScore').innerHTML=`Richtig <b style="color:var(--dur);font-family:var(--display)">${ok}</b> / ${SONGS.length}`;
+});
+document.getElementById('sdReset').addEventListener('click',renderSongs);
+renderSongs();
+</script>
+</body>
+</html>
