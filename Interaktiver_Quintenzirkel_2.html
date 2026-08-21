@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interaktiver Quintenzirkel – Funktionsharmonik lesen</title>
+<style>
+  :root{
+    --bg:#160f1f; --panel:#1d1330; --panel2:#241634;
+    --brass:#d9b24c; --brass-lo:#a9832f; --brass-hi:#f4dd8f;
+    --parch:#efe6d0; --ink:#2c2419;
+    --t:#2f6fd0; --tp:#7aa0dd; --s:#12938a; --sp:#6bc0b8; --d:#cf4550; --dp:#e29aa0; --dd:#7a4fce; --geg:#e08a1e;
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--sans);color:#efe9dd;background:var(--bg);
+    background-image:
+      radial-gradient(1100px 560px at 50% -10%, rgba(217,178,76,.14), transparent 60%),
+      radial-gradient(900px 700px at 50% 120%, rgba(47,111,208,.10), transparent 60%),
+      linear-gradient(180deg,#160f1f,#1b1128 55%,#150e1e);
+    background-attachment:fixed;min-height:100vh;line-height:1.5}
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 18px 60px}
+  .eyebrow{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--brass);font-weight:700;margin:0 0 8px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,4.6vw,2.7rem);color:#fbf3e0;margin:0 0 6px;line-height:1.08}
+  .lede{color:#d8cdb8;font-size:1.02rem;max-width:680px;margin:0 0 18px}
+  .lede b{color:#fbf3e0}
+
+  .layout{display:grid;grid-template-columns:minmax(320px,1fr) 360px;gap:26px;align-items:start}
+  @media(max-width:860px){.layout{grid-template-columns:1fr}}
+
+  /* wheel */
+  .wheelcard{background:rgba(29,19,48,.5);border:1px solid rgba(217,178,76,.2);border-radius:16px;padding:14px}
+  .pick{font-size:.85rem;color:#c9bea8;text-align:center;margin:2px 0 8px}
+  .pick b{color:var(--brass-hi)}
+  svg{width:100%;height:auto;display:block;touch-action:manipulation}
+  .seg{cursor:pointer;transition:filter .12s}
+  .seg:hover{filter:brightness(1.07)}
+  .seg:focus-visible{outline:none}
+  .segtxt{font-family:var(--serif);pointer-events:none;user-select:none}
+  .ftag{font-family:var(--sans);font-weight:800;pointer-events:none;user-select:none}
+  .alt{font-family:var(--serif);pointer-events:none;user-select:none}
+
+  /* panel */
+  .panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
+  .panel-h h2{font-family:var(--serif);font-size:1.5rem;color:#fbf3e0;margin:0}
+  .modepill{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#2a1c07;background:var(--brass);
+    border-radius:999px;padding:3px 10px;font-weight:800}
+  .subnote{color:#c9bea8;font-size:.86rem;margin:0 0 12px}
+
+  .frow{display:grid;grid-template-columns:20px 46px 1fr auto auto;gap:10px;align-items:center;
+    padding:9px 10px;border-radius:9px;background:rgba(36,22,52,.5);margin:6px 0;border:1px solid rgba(217,178,76,.12)}
+  .frow.tonic{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset}
+  .sw{width:16px;height:16px;border-radius:4px}
+  .fsym{font-family:var(--serif);font-weight:700;font-size:1.15rem;color:#fbf3e0}
+  .fname{font-size:.92rem;color:#efe9dd}
+  .fname .full{display:block;color:#9b9080;font-size:.74rem;letter-spacing:.02em}
+  .fstufe{font-family:var(--serif);color:#c9bea8;font-size:.95rem;min-width:34px;text-align:right}
+  .hearrow{border:1px solid var(--brass-lo);background:rgba(244,221,143,.08);color:var(--brass-hi);
+    border-radius:8px;width:34px;height:30px;cursor:pointer;font-size:.9rem}
+  .hearrow:hover{background:rgba(244,221,143,.16)}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+  .btn{cursor:pointer;border:none;border-radius:999px;padding:11px 18px;font-size:.94rem;font-weight:700}
+  .btn.primary{color:#2a1c07;background:linear-gradient(180deg,var(--brass-hi),var(--brass))}
+  .btn.primary:hover{filter:brightness(1.05)}
+  .btn.ghost{background:transparent;color:var(--brass-hi);border:1.5px solid rgba(217,178,76,.5)}
+  .btn.ghost:hover{background:rgba(217,178,76,.1)}
+  .toggle{display:flex;align-items:center;gap:8px;font-size:.9rem;color:#d8cdb8;margin-top:10px;cursor:pointer;user-select:none}
+  .toggle input{width:18px;height:18px;accent-color:var(--dd)}
+
+  .note{background:rgba(36,22,52,.5);border-left:3px solid var(--brass);border-radius:0 8px 8px 0;
+    padding:10px 12px;margin:14px 0 0;font-size:.86rem;color:#d8cdb8}
+  .note b{color:#fbf3e0}
+
+  details.help{margin-top:22px;border:1px solid rgba(217,178,76,.2);border-radius:12px;background:rgba(29,19,48,.5);overflow:hidden}
+  details.help summary{cursor:pointer;list-style:none;padding:14px 16px;font-family:var(--serif);font-size:1.05rem;color:var(--brass-hi)}
+  details.help summary::-webkit-details-marker{display:none}
+  details.help[open] summary{border-bottom:1px solid rgba(217,178,76,.2)}
+  .helpbody{padding:6px 18px 18px;color:#e2d8c4;font-size:.95rem}
+  .helpbody ol{padding-left:20px}.helpbody li{margin:6px 0}
+  .helpbody b{color:#fbf3e0}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 2px;font-size:.82rem;color:#c9bea8}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
+  .foot{text-align:center;color:#6f6553;font-size:.78rem;margin-top:30px}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Musik · Oberstufe · Funktionsharmonik</div>
+  <h1>Der Quintenzirkel als Lesehilfe</h1>
+  <p class="lede">Wähle die Tonart eines Stücks – <b>Außenring für Dur, Innenring für Moll</b> – und der Kreis zeigt dir
+    sofort ihre Funktionen. <b>Subdominante, Tonika und Dominante liegen immer nebeneinander</b>; die Parallelklänge
+    stehen genau gegenüber (Dur ↔ Moll). So liest du die Harmonik jeder Tonart direkt ab.</p>
+
+  <div class="layout">
+    <div>
+      <div class="wheelcard">
+        <div class="pick">Tippe eine Tonart an · aktuell: <b id="pickname">C-Dur</b></div>
+        <div id="wheel"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <details class="help">
+    <summary>So liest du damit ein Musikstück</summary>
+    <div class="helpbody">
+      <ol>
+        <li><b>Tonart bestimmen:</b> Vorzeichen und Schlussakkord verraten sie. Wähle sie hier (Außenring = Dur, Innenring = Moll).</li>
+        <li><b>Akkorde zuordnen:</b> Suche jeden Akkord des Stücks auf dem Kreis. Ist er farbig markiert, kannst du seine Funktion direkt ablesen (T, S, D, Tp, Sp, Dp).</li>
+        <li><b>Nachbarn merken:</b> Die Felder <i>links und rechts</i> der Tonika sind Subdominante und Dominante – das Rückgrat jeder Kadenz.</li>
+        <li><b>Parallelen erkennen:</b> Ein Moll-Akkord in einem Dur-Stück (oder umgekehrt) liegt meist direkt gegenüber – das ist die Parallele des Nachbarn.</li>
+        <li><b>Weiter denken:</b> Schalte die <i>Doppeldominante</i> zu, um typische Spannungssteigerungen zu erkennen. Klingt ein Akkord „von außerhalb", ist er oft eine Zwischendominante.</li>
+      </ol>
+    </div>
+  </details>
+
+  <p class="foot">Interaktiver Quintenzirkel · läuft offline im Browser · Klang über die Web-Audio-Technik.</p>
+</div>
+
+<script>
+/* ===================== AUDIO ===================== */
+let actx=null;
+function ac(){ if(!actx){actx=new (window.AudioContext||window.webkitAudioContext)();} if(actx.state==='suspended')actx.resume(); return actx; }
+function fM(m){ return 440*Math.pow(2,(m-69)/12); }
+function tone(f,t0,dur,pk){ const c=ac(),o=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();
+  o.type='triangle';o.frequency.value=f;lp.type='lowpass';lp.frequency.value=2400;
+  g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(pk,t0+0.015);g.gain.exponentialRampToValueAtTime(0.0008,t0+dur);
+  o.connect(lp).connect(g).connect(c.destination);o.start(t0);o.stop(t0+dur+0.05); }
+function playMidi(midis,dur){ dur=dur||1.25; const t0=ac().currentTime+0.02; midis.forEach(m=>tone(fM(m),t0,dur,0.16)); }
+function playSeqM(chords,step,dur){ step=step||0.72;dur=dur||0.66; let t=ac().currentTime+0.05;
+  chords.forEach(ch=>{ch.forEach(m=>tone(fM(m),t,dur,0.15));t+=step;}); }
+function triadMidi(rootpc,qual){ const r=57+((rootpc+3)%12); const third=qual==='maj'?4:3; return [r,r+third,r+7]; }
+
+/* ===================== DATA ===================== */
+const majors=['C','G','D','A','E','H','Fis','Des','As','Es','B','F'];
+const majorsAlt={6:'Ges',7:'Cis'};
+const minors=['a','e','h','fis','cis','gis','dis','b','f','c','g','d'];
+const minorsAlt={6:'es',7:'ais'};
+const minorRoot=['A','E','H','Fis','Cis','Gis','Dis','B','F','C','G','D'];
+const majPC=i=>(((((i%12)+12)%12)*7)%12);
+const minPC=i=>(majPC(i)+9)%12;
+const majIdxOfPC=r=>((((r%12)+12)%12)*7)%12;
+const minIdxOfPC=r=>majIdxOfPC(((r%12)+12)%12+3);
+const COL={T:'var(--t)',Tp:'var(--tp)',S:'var(--s)',Sp:'var(--sp)',D:'var(--d)',Dp:'var(--dp)',DD:'var(--dd)'};
+const FN={T:'Tonika',S:'Subdominante',D:'Dominante',Tp:'Tonikaparallele',Sp:'Subdominantparallele',
+  Dp:'Dominantparallele',DD:'Doppeldominante',t:'Tonika',s:'Subdominante',tP:'Tonikaparallele',
+  sP:'Subdominantparallele',dP:'Dominantparallele',
+  Tg:'Tonika-Gegenklang',Sg:'Subdominant-Gegenklang',Dg:'Dominant-Gegenklang',
+  tg:'Tonika-Gegenklang',sg:'Subdominant-Gegenklang'};
+
+const state={ i:0, mode:'dur', showDD:false, showGeg:false };
+
+function majName(i){ return majors[((i%12)+12)%12]+'-Dur'; }
+function minName(i){ return minors[((i%12)+12)%12]+'-Moll'; }
+
+function computeFunctions(i,mode){
+  const L=(i+11)%12, R=(i+1)%12, RR=(i+2)%12;
+  let f=[];
+  if(mode==='dur'){
+    f=[
+      {sym:'T', col:'T', ring:'o', idx:i, name:majName(i), stufe:'I',   rootpc:majPC(i), qual:'maj', tonic:true},
+      {sym:'S', col:'S', ring:'o', idx:L, name:majName(L), stufe:'IV',  rootpc:majPC(L), qual:'maj'},
+      {sym:'D', col:'D', ring:'o', idx:R, name:majName(R), stufe:'V',   rootpc:majPC(R), qual:'maj'},
+      {sym:'Tp',col:'Tp',ring:'i', idx:i, name:minName(i), stufe:'vi',  rootpc:minPC(i), qual:'min'},
+      {sym:'Sp',col:'Sp',ring:'i', idx:L, name:minName(L), stufe:'ii',  rootpc:minPC(L), qual:'min'},
+      {sym:'Dp',col:'Dp',ring:'i', idx:R, name:minName(R), stufe:'iii', rootpc:minPC(R), qual:'min'},
+    ];
+    if(state.showDD) f.push({sym:'DD',col:'DD',ring:'o',idx:RR,name:majName(RR),stufe:'V/V',rootpc:majPC(RR),qual:'maj',adv:true});
+  } else {
+    const domRoot=(minPC(i)+7)%12, ddRoot=(minPC(i)+2)%12;
+    f=[
+      {sym:'t', col:'T', ring:'i', idx:i, name:minName(i), stufe:'i',  rootpc:minPC(i), qual:'min', tonic:true},
+      {sym:'s', col:'S', ring:'i', idx:L, name:minName(L), stufe:'iv', rootpc:minPC(L), qual:'min'},
+      {sym:'D', col:'D', ring:'i', idx:R, name:minorRoot[R]+'-Dur', stufe:'V', rootpc:domRoot, qual:'maj', majinmin:true},
+      {sym:'tP',col:'Tp',ring:'o', idx:i, name:majName(i), stufe:'III', rootpc:majPC(i), qual:'maj'},
+      {sym:'sP',col:'Sp',ring:'o', idx:L, name:majName(L), stufe:'VI',  rootpc:majPC(L), qual:'maj'},
+      {sym:'dP',col:'Dp',ring:'o', idx:R, name:majName(R), stufe:'VII', rootpc:majPC(R), qual:'maj'},
+    ];
+    if(state.showDD) f.push({sym:'DD',col:'DD',ring:'i',idx:RR,name:minorRoot[RR]+'-Dur',stufe:'V/V',rootpc:ddRoot,qual:'maj',adv:true,majinmin:true});
+  }
+  if(state.showGeg){
+    const gsym = mode==='dur'? ['Tg','Sg','Dg'] : ['tg','sg','Dg'];
+    [f[0],f[1],f[2]].forEach((m,k)=>{
+      let gRoot,gQual;
+      if(m.qual==='maj'){ gRoot=(m.rootpc+4)%12; gQual='min'; }   // Leittonwechsel: gro\u00dfe Terz aufw\u00e4rts, Moll
+      else { gRoot=(m.rootpc+8)%12; gQual='maj'; }                 // gro\u00dfe Terz abw\u00e4rts, Dur
+      const ring = gQual==='maj'?'o':'i';
+      const idx  = gQual==='maj'? majIdxOfPC(gRoot) : minIdxOfPC(gRoot);
+      const name = gQual==='maj'? (majors[idx]+'-Dur') : (minors[idx]+'-Moll');
+      f.push({sym:gsym[k], col:'GEG', ring, idx, name, stufe:'\u2192 '+['T','S','D'][k], rootpc:gRoot, qual:gQual, adv:true, geg:true});
+    });
+  }
+  return f;
+}
+
+/* ===================== WHEEL (SVG) ===================== */
+const CX=310,CY=310;
+const RO_O=300,RO_I=224,RI_O=220,RI_I=144,HUB=140;
+const RMID_O=(RO_O+RO_I)/2, RMID_I=(RI_O+RI_I)/2;
+function pol(r,deg){ const a=deg*Math.PI/180; return [CX+r*Math.sin(a), CY-r*Math.cos(a)]; }
+function sector(ri,ro,dA,dB){
+  const [x1,y1]=pol(ro,dA),[x2,y2]=pol(ro,dB),[x3,y3]=pol(ri,dB),[x4,y4]=pol(ri,dA);
+  return `M${x1.toFixed(2)} ${y1.toFixed(2)} A${ro} ${ro} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} `
+       + `L${x3.toFixed(2)} ${y3.toFixed(2)} A${ri} ${ri} 0 0 0 ${x4.toFixed(2)} ${y4.toFixed(2)} Z`;
+}
+function segColor(hit){ return hit? getComputedStyle(document.documentElement).getPropertyValue('--'+hit.col.toLowerCase()).trim() : null; }
+
+function renderWheel(){
+  const funcs=computeFunctions(state.i,state.mode);
+  const map={}, gegMap={};
+  funcs.forEach(f=>{ if(f.geg){ gegMap[f.ring+f.idx]=f; } else { map[f.ring+f.idx]=f; } });
+  let parts=[`<svg viewBox="0 0 620 620" role="img" aria-label="Quintenzirkel">`];
+  // rings
+  for(let i=0;i<12;i++){
+    const dA=i*30-15, dB=i*30+15, cDeg=i*30;
+    // outer (Dur)
+    [['o',RO_I,RO_O,RMID_O,majors[i],majorsAlt[i]],
+     ['i',RI_I,RI_O,RMID_I,minors[i],minorsAlt[i]]].forEach(([ring,ri,ro,rmid,label,alt])=>{
+      const hit=map[ring+i];
+      const neutral= ring==='o'? '#efe6d0':'#dccdb0';
+      const f=hit? segColor(hit): neutral;
+      const isTonic=hit&&hit.tonic;
+      const stroke=isTonic? 'var(--brass)': '#c8b98f';
+      const sw=isTonic? 5:1.2;
+      const title = hit? `${label}-${ring==='o'?'Dur':'Moll'} — ${FN[hit.sym]} (${hit.stufe})` : `${label}-${ring==='o'?'Dur':'Moll'}`;
+      parts.push(`<path class="seg" data-ring="${ring}" data-i="${i}" d="${sector(ri,ro,dA,dB)}" `
+        +`fill="${f}" stroke="${stroke}" stroke-width="${sw}" tabindex="0" role="button"><title>${title}</title></path>`);
+      // labels
+      const [lx,ly]=pol(rmid + (hit? (ring==='o'? -9 : 9) : 0), cDeg);
+      const txtcol=hit? '#ffffff':'#2c2419';
+      const fs= ring==='o'? 21:18;
+      parts.push(`<text class="segtxt" x="${lx.toFixed(1)}" y="${(ly+ (hit?0:5)).toFixed(1)}" text-anchor="middle" font-size="${fs}" fill="${txtcol}" font-weight="600">${label}</text>`);
+      if(alt){ parts.push(`<text class="alt" x="${lx.toFixed(1)}" y="${(ly+ (hit?13:19)).toFixed(1)}" text-anchor="middle" font-size="11" fill="${hit?'rgba(255,255,255,.85)':'#6a5f45'}">/${alt}</text>`); }
+      if(hit){ const [fx,fy]=pol(ring==='o'? ro-13: ri+13, cDeg);
+        parts.push(`<text class="ftag" x="${fx.toFixed(1)}" y="${(fy+4).toFixed(1)}" text-anchor="middle" font-size="12.5" fill="#fff">${hit.sym}</text>`); }
+      const g=gegMap[ring+i];
+      if(g){
+        parts.push(`<path d="${sector(ri+5,ro-5,dA+1.6,dB-1.6)}" fill="none" stroke="#d98324" stroke-width="2.8" stroke-dasharray="5 3"/>`);
+        const [gx,gy]=pol(ring==='o'? RO_I+16 : RI_O-14, cDeg);
+        parts.push(`<text class="ftag" x="${gx.toFixed(1)}" y="${(gy+4).toFixed(1)}" text-anchor="middle" font-size="11.5" fill="${hit?'#ffe0a8':'#8a5200'}">${g.sym}</text>`);
+      }
+    });
+  }
+  // hub
+  const tonicName = state.mode==='dur'? majName(state.i): minName(state.i);
+  parts.push(`<circle cx="${CX}" cy="${CY}" r="${HUB}" fill="#1a1030" stroke="var(--brass)" stroke-width="2"/>`);
+  parts.push(`<text x="${CX}" y="${CY-18}" text-anchor="middle" font-size="15" fill="#c9bea8" font-family="var(--sans)" letter-spacing="2">TONIKA</text>`);
+  parts.push(`<text x="${CX}" y="${CY+18}" text-anchor="middle" font-size="34" fill="#fbf3e0" font-family="var(--serif)" font-weight="700">${tonicName}</text>`);
+  parts.push(`<text x="${CX}" y="${CY+46}" text-anchor="middle" font-size="13" fill="#9b9080" font-family="var(--sans)">S · T · D liegen nebeneinander</text>`);
+  parts.push(`</svg>`);
+  document.getElementById('wheel').innerHTML=parts.join('');
+  document.querySelectorAll('.seg').forEach(p=>{
+    const act=()=>selectKey(p.dataset.ring, +p.dataset.i);
+    p.addEventListener('click',act);
+    p.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();act();} });
+  });
+  document.getElementById('pickname').textContent=tonicName;
+}
+
+function selectKey(ring,i){ ac(); state.i=i; state.mode= ring==='o'?'dur':'moll';
+  const funcs=computeFunctions(state.i,state.mode); const ton=funcs.find(f=>f.tonic);
+  playMidi(triadMidi(ton.rootpc,ton.qual));
+  renderWheel(); renderPanel(); }
+
+/* ===================== PANEL ===================== */
+function renderPanel(){
+  const funcs=computeFunctions(state.i,state.mode);
+  const tonicName = state.mode==='dur'? majName(state.i): minName(state.i);
+  const modeLabel = state.mode==='dur'?'Dur':'Moll';
+  let rows=funcs.map((f,idx)=>{
+    const swatch=`var(--${f.col.toLowerCase()})`;
+    return `<div class="frow ${f.tonic?'tonic':''}">
+      <span class="sw" style="background:${swatch}"></span>
+      <span class="fsym">${f.sym}</span>
+      <span class="fname">${f.name}<span class="full">${FN[f.sym]}</span></span>
+      <span class="fstufe">${f.stufe}</span>
+      <button class="hearrow" data-fi="${idx}" aria-label="${f.name} hören">▶</button>
+    </div>`;
+  }).join('');
+
+  const minorNote = state.mode==='moll'
+    ? `<div class="note"><b>In Moll ist die Dominante ein Dur-Akkord</b> (durch den Leitton). Deshalb steht in der Tabelle
+        z. B. <b>${funcs.find(f=>f.sym==='D').name}</b>, obwohl das Feld auf dem Kreis den gleichnamigen Mollklang zeigt.</div>`
+    : `<div class="note"><b>Ablesen:</b> Das Feld links der Tonika ist die Subdominante, das rechte die Dominante.
+        Die Parallelen (Tp, Sp, Dp) liegen radial gegenüber im Moll-Ring.</div>`;
+  const gegNote = state.showGeg
+    ? `<div class="note" style="border-left-color:var(--geg)"><b>Gegenklänge (Leittonwechselklänge)</b> teilen zwei Töne mit ihrer
+        Hauptfunktion; der dritte Ton rückt einen Halbton (Leitton) weiter. Sie sind am Kreis <b>bernsteinfarben umrandet</b>.
+        Manche fallen mit einem Parallelklang zusammen – dann trägt dasselbe Feld zwei Deutungen.</div>`
+    : '';
+
+  document.getElementById('panel').innerHTML=`
+    <div class="panel-h"><h2>${tonicName}</h2><span class="modepill">${modeLabel}</span></div>
+    <p class="subnote">Funktion · Akkord · Stufe — tippe ▶, um den Klang zu hören.</p>
+    ${rows}
+    <div class="controls">
+      <button class="btn primary" id="hearCad">▶ Kadenz hören (${state.mode==='dur'?'T–S–D–T':'t–s–D–t'})</button>
+      <button class="btn ghost" id="hearAll">▶ Alle Funktionen</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="ddToggle" ${state.showDD?'checked':''}> Doppeldominante anzeigen</label>
+    <label class="toggle"><input type="checkbox" id="gegToggle" ${state.showGeg?'checked':''}> Gegenklänge (Leittonwechselklänge) anzeigen</label>
+    ${gegNote}${minorNote}`;
+
+  document.querySelectorAll('.hearrow').forEach(b=>b.onclick=()=>{ const f=funcs[+b.dataset.fi]; playMidi(triadMidi(f.rootpc,f.qual)); });
+  document.getElementById('hearCad').onclick=()=>{
+    const T=funcs.find(f=>f.tonic), S=funcs.find(f=>f.sym==='S'||f.sym==='s'), D=funcs.find(f=>f.sym==='D');
+    playSeqM([triadMidi(T.rootpc,T.qual),triadMidi(S.rootpc,S.qual),triadMidi(D.rootpc,D.qual),triadMidi(T.rootpc,T.qual)],0.75,0.7);
+  };
+  document.getElementById('hearAll').onclick=()=>{
+    playSeqM(funcs.map(f=>triadMidi(f.rootpc,f.qual)),0.62,0.6);
+  };
+  document.getElementById('ddToggle').onchange=e=>{ state.showDD=e.target.checked; renderWheel(); renderPanel(); };
+  document.getElementById('gegToggle').onchange=e=>{ state.showGeg=e.target.checked; renderWheel(); renderPanel(); };
+}
+
+/* ===================== LEGEND ===================== */
+function renderLegend(){
+  const items=[['T/Tp','var(--t)','Tonika'],['S/Sp','var(--s)','Subdominante'],['D/Dp','var(--d)','Dominante'],['DD','var(--dd)','Doppeldominante'],['Geg','var(--geg)','Gegenklang']];
+  document.getElementById('legend').innerHTML=items.map(([a,c,n])=>`<span><i style="background:${c}"></i>${n}</span>`).join('');
+}
+
+/* ===================== GO ===================== */
+renderLegend(); renderWheel(); renderPanel();
+</script>
+</body>
+</html>
