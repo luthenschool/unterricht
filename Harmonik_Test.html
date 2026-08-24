@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonik-Test – Funktionen, Doppeldominante, Gegenklänge</title>
+<style>
+  :root{
+    --bg:#160f1f; --panel:#1d1330; --panel2:#241634;
+    --brass:#d9b24c; --brass-lo:#a9832f; --brass-hi:#f4dd8f;
+    --parch:#efe6d0; --parch-lo:#e2d5b6; --ink:#2c2419;
+    --t:#2f6fd0; --s:#12938a; --d:#cf4550; --dd:#7a4fce; --geg:#d98324;
+    --ok:#3fae6b; --bad:#d6604d;
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--sans);color:#efe9dd;background:var(--bg);
+    background-image:
+      radial-gradient(1100px 560px at 50% -10%, rgba(217,178,76,.15), transparent 60%),
+      radial-gradient(900px 700px at 50% 120%, rgba(47,111,208,.10), transparent 60%),
+      linear-gradient(180deg,#160f1f,#1b1128 55%,#150e1e);
+    background-attachment:fixed;min-height:100vh;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto;padding:22px 18px 70px}
+  .eyebrow{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--brass);font-weight:700;margin:0 0 8px}
+  h1{font-family:var(--serif);font-weight:600;color:#fbf3e0;margin:0 0 8px;line-height:1.08}
+  .btn{cursor:pointer;border:none;border-radius:999px;padding:13px 26px;font-size:1rem;font-weight:700;font-family:inherit}
+  .btn.primary{color:#2a1c07;background:linear-gradient(180deg,var(--brass-hi),var(--brass));box-shadow:0 8px 22px rgba(217,178,76,.3)}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn.ghost{background:transparent;color:var(--brass-hi);border:1.5px solid rgba(217,178,76,.5)}
+  .btn.ghost:hover{background:rgba(217,178,76,.1)}
+  .btnrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:16px 0}
+  .btn:focus-visible,.opt:focus-visible{outline:3px solid var(--brass-hi);outline-offset:2px}
+
+  /* start */
+  .start{text-align:center;padding:20px 6px}
+  .start h1{font-size:clamp(2rem,5.6vw,2.9rem)}
+  .sub{font-family:var(--serif);font-style:italic;color:#d8cdb8;font-size:1.1rem;margin:0 0 18px}
+  .intro{max-width:600px;margin:0 auto 6px;color:#e7ddca}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;max-width:600px;margin:22px auto 4px}
+  .fact{border:1px solid rgba(217,178,76,.25);border-radius:11px;padding:12px;background:rgba(36,22,52,.5)}
+  .fact .k{font-family:var(--serif);color:var(--brass);font-size:.8rem}
+  .fact .v{font-size:.92rem;color:#e7ddca;margin-top:2px}
+  .nameinput{margin:22px auto 4px;max-width:340px}
+  .nameinput label{display:block;font-size:.85rem;color:#c9bea8;margin-bottom:6px}
+  .nameinput input{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(217,178,76,.4);
+    background:rgba(20,12,8,.35);color:#fbf3e0;font-family:var(--serif);font-size:1.05rem;text-align:center}
+  .nameinput input:focus{outline:none;border-color:var(--brass)}
+
+  /* hud */
+  .hud{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;
+    padding:10px 14px;border:1px solid rgba(217,178,76,.22);border-radius:12px;
+    background:rgba(29,19,48,.75);backdrop-filter:blur(4px);margin-bottom:16px;position:sticky;top:8px;z-index:20}
+  .hud .qn{font-family:var(--serif);font-size:.95rem;color:#e7ddca}
+  .hud .right{display:flex;gap:14px;align-items:center;font-size:.86rem;color:#c9bea8}
+  .timer{font-variant-numeric:tabular-nums;color:#e7ddca;font-weight:600}
+  .bar{height:6px;border-radius:999px;background:#2b1c40;overflow:hidden;margin-top:8px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brass),var(--brass-hi));transition:width .3s}
+
+  /* question card */
+  .qcard{background:linear-gradient(180deg,var(--parch),var(--parch-lo));color:var(--ink);
+    border-radius:14px;padding:20px 20px 18px;box-shadow:0 8px 22px rgba(0,0,0,.4);border:1px solid #d8c8a3}
+  .tag{display:inline-block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;
+    color:#fff;border-radius:999px;padding:3px 11px;margin-bottom:10px}
+  .q{font-size:1.18rem;font-weight:600;margin:0 0 4px;line-height:1.35}
+  .qhint{font-size:.86rem;color:#6a5f45;margin:0 0 14px}
+  .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+  .opt{cursor:pointer;border:1.5px solid #c9b788;background:#fbf5e6;color:#3a2f1e;border-radius:10px;
+    padding:13px 14px;font-size:1rem;font-weight:600;font-family:var(--serif);transition:all .12s;text-align:center}
+  .opt:hover:not(:disabled){border-color:var(--brass-lo);background:#fff}
+  .opt.correct{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.wrong{background:var(--bad);border-color:var(--bad);color:#fff;animation:shake .38s}
+  .opt:disabled{cursor:default;opacity:.85}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+  .fb{margin-top:14px;padding:11px 14px;border-radius:10px;font-size:.93rem;display:none}
+  .fb.show{display:block}
+  .fb.good{background:rgba(63,174,107,.16);border-left:3px solid var(--ok);color:#1f5c38}
+  .fb.err{background:rgba(214,96,77,.14);border-left:3px solid var(--bad);color:#7d2f22}
+  .tries{font-size:.8rem;color:#6a5f45;margin-top:10px;text-align:right}
+  .nextrow{display:flex;justify-content:flex-end;margin-top:16px}
+
+  /* certificate */
+  .cert{background:linear-gradient(180deg,#f6efdc,#e8dcc0);color:var(--ink);border-radius:8px;
+    padding:34px 30px;box-shadow:0 14px 40px rgba(0,0,0,.5);position:relative;
+    border:2px solid var(--brass-lo);outline:1px solid rgba(120,90,30,.35);outline-offset:6px}
+  .cert::before{content:"";position:absolute;inset:9px;border:1px solid rgba(150,115,45,.4);border-radius:4px;pointer-events:none}
+  .cert-in{position:relative;text-align:center}
+  .cert .kicker{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:#8a6a1e;font-weight:800}
+  .cert h2{font-family:var(--serif);font-size:clamp(1.9rem,5.4vw,2.6rem);margin:8px 0 2px;color:#2a2113}
+  .cert .rule{width:130px;height:2px;background:linear-gradient(90deg,transparent,var(--brass-lo),transparent);margin:12px auto 16px}
+  .cert .for{font-size:.9rem;color:#6a5f45}
+  .cert .who{font-family:var(--serif);font-size:1.7rem;font-weight:700;color:#2a2113;margin:2px 0 12px;
+    border-bottom:1.5px dotted rgba(120,90,30,.5);display:inline-block;padding:0 22px 4px}
+  .cert .lead{max-width:470px;margin:0 auto 20px;font-size:.95rem;color:#4a4030}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:12px;margin:18px 0 6px}
+  .stat{background:rgba(255,255,255,.6);border:1px solid rgba(150,115,45,.28);border-radius:10px;padding:12px 8px}
+  .stat .n{font-family:var(--serif);font-size:1.85rem;font-weight:700;line-height:1.1}
+  .stat .l{font-size:.74rem;letter-spacing:.06em;color:#6a5f45;margin-top:3px}
+  .n.ok{color:#2f7d4f}.n.bad{color:#a8402f}.n.br{color:#8a6a1e}.n.tm{color:#2a4f8a}
+  .grade{margin:20px auto 4px;display:inline-block;background:rgba(217,178,76,.2);
+    border:1px solid var(--brass-lo);border-radius:999px;padding:9px 24px;font-family:var(--serif);
+    font-size:1.2rem;font-weight:700;color:#5c4712}
+  .seal{width:88px;height:88px;margin:20px auto 4px;border-radius:50%;display:grid;place-items:center;
+    background:radial-gradient(circle at 35% 30%,var(--brass-hi),var(--brass) 45%,var(--brass-lo));
+    box-shadow:0 4px 14px rgba(120,90,30,.5);color:#4a3708;font-size:2.1rem;
+    border:3px double rgba(255,255,255,.55)}
+  .sig{display:flex;justify-content:space-around;gap:20px;margin-top:22px;flex-wrap:wrap}
+  .sig div{flex:1 1 150px;min-width:140px;border-top:1px solid rgba(120,90,30,.5);padding-top:5px;
+    font-size:.76rem;color:#6a5f45}
+  .breakdown{margin-top:24px;text-align:left}
+  .breakdown h3{font-family:var(--serif);font-size:1rem;color:#5c4712;margin:0 0 8px;text-align:center}
+
+  /* Auswertung nach Bereichen */
+  .verdict{margin:20px auto 4px;max-width:520px;border-radius:10px;padding:14px 16px;text-align:left;
+    border:1px solid rgba(150,115,45,.35);background:rgba(255,255,255,.55)}
+  .verdict .vh{font-family:var(--serif);font-size:1.05rem;font-weight:700;margin-bottom:4px}
+  .verdict p{margin:0;font-size:.9rem;color:#4a4030}
+  .cats{margin-top:20px;text-align:left}
+  .cats h3{font-family:var(--serif);font-size:1rem;color:#5c4712;margin:0 0 10px;text-align:center}
+  .crow{display:grid;grid-template-columns:118px 1fr 62px 84px;gap:9px;align-items:center;
+    padding:6px 8px;border-radius:7px;font-size:.83rem;color:#4a4030}
+  .crow:nth-child(odd){background:rgba(255,255,255,.42)}
+  .cname{font-weight:700}
+  .cbar{height:9px;border-radius:999px;background:rgba(120,90,30,.16);overflow:hidden}
+  .cbar>i{display:block;height:100%;border-radius:999px}
+  .cscore{font-variant-numeric:tabular-nums;text-align:right;color:#5c4712;font-weight:700}
+  .cverd{font-size:.74rem;font-weight:700;text-align:right}
+  .rec{margin-top:18px;border-radius:10px;padding:14px 16px;text-align:left;
+    background:rgba(217,178,76,.16);border:1px solid rgba(150,115,45,.4)}
+  .rec .rh{font-family:var(--serif);font-weight:700;color:#5c4712;margin-bottom:6px;font-size:1rem}
+  .rec ul{margin:6px 0 0;padding-left:19px}
+  .rec li{font-size:.87rem;color:#4a4030;margin:4px 0}
+  @media(max-width:520px){.crow{grid-template-columns:100px 1fr 54px;}.cverd{display:none}}
+  .brow{display:flex;align-items:center;gap:9px;padding:5px 8px;border-radius:7px;font-size:.83rem;color:#4a4030}
+  .brow:nth-child(odd){background:rgba(255,255,255,.42)}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .brow .txt{flex:1;min-width:0}
+  .brow .tr{font-variant-numeric:tabular-nums;color:#6a5f45;font-size:.78rem}
+  .note{background:rgba(36,22,52,.55);border-left:3px solid var(--brass);border-radius:0 8px 8px 0;
+    padding:11px 14px;margin:18px 0 0;font-size:.88rem;color:#d8cdb8}
+  .foot{text-align:center;color:#6f6553;font-size:.78rem;margin-top:28px}
+  @media print{body{background:#fff}.wrap{padding:0}.noprint{display:none!important}
+    .cert{box-shadow:none;background:#fff}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ================= AUDIO (kurzes Feedback-Signal) ================= */
+let actx=null;
+function ac(){if(!actx){actx=new (window.AudioContext||window.webkitAudioContext)();}if(actx.state==='suspended')actx.resume();return actx;}
+function beep(freqs,dur){try{const c=ac();const t0=c.currentTime+0.01;freqs.forEach((f,i)=>{
+  const o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;
+  const s=t0+i*0.075;g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(0.13,s+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0008,s+(dur||0.28));
+  o.connect(g).connect(c.destination);o.start(s);o.stop(s+(dur||0.28)+0.05);});}catch(e){}}
+const okSound=()=>beep([523.25,659.25,783.99],0.3);
+const errSound=()=>beep([233.08,196.00],0.26);
+const fanfare=()=>beep([523.25,659.25,783.99,1046.50],0.55);
+
+/* ================= FRAGEN ================= */
+const CAT={
+  haupt:{label:'Hauptfunktionen',color:'#2f6fd0'},
+  neben:{label:'Nebenfunktionen',color:'#12938a'},
+  moll:{label:'Moll',color:'#0f766e'},
+  dd:{label:'Doppeldominante',color:'#7a4fce'},
+  geg:{label:'Gegenklänge',color:'#d98324'},
+  analyse:{label:'Funktion bestimmen',color:'#a03e86'}
+};
+const Q=[
+ {c:'haupt',q:'Welcher Akkord ist die <b>Dominante</b> in G-Dur?',h:'Ein Feld im Uhrzeigersinn.',
+  o:['D-Dur','C-Dur','A-Dur','e-Moll'],a:'D-Dur',e:'Die Dominante steht auf der V. Stufe – in G-Dur ist das D-Dur.'},
+ {c:'haupt',q:'Welcher Akkord ist die <b>Subdominante</b> in F-Dur?',h:'Ein Feld gegen den Uhrzeigersinn.',
+  o:['C-Dur','B-Dur','Es-Dur','d-Moll'],a:'B-Dur',e:'Die Subdominante steht auf der IV. Stufe – in F-Dur ist das B-Dur.'},
+ {c:'haupt',q:'Welcher Akkord ist die <b>Dominante</b> in D-Dur?',h:'Eine Quinte über der Tonika.',
+  o:['G-Dur','h-Moll','A-Dur','E-Dur'],a:'A-Dur',e:'V. Stufe von D-Dur ist A-Dur (a–cis–e).'},
+ {c:'haupt',q:'Welcher Akkord ist die <b>Subdominante</b> in B-Dur?',h:'Eine Quinte unter der Tonika.',
+  o:['F-Dur','Es-Dur','As-Dur','g-Moll'],a:'Es-Dur',e:'IV. Stufe von B-Dur ist Es-Dur.'},
+ {c:'haupt',q:'Welcher Akkord ist die <b>Dominante</b> in Es-Dur?',h:'Ein Feld rechts im Quintenzirkel.',
+  o:['As-Dur','B-Dur','F-Dur','c-Moll'],a:'B-Dur',e:'V. Stufe von Es-Dur ist B-Dur.'},
+
+ {c:'neben',q:'Welcher Akkord ist die <b>Tonikaparallele (Tp)</b> in C-Dur?',h:'Radial gegenüber im Moll-Ring.',
+  o:['e-Moll','d-Moll','a-Moll','F-Dur'],a:'a-Moll',e:'Die Tp liegt auf der VI. Stufe – in C-Dur a-Moll (a–c–e).'},
+ {c:'neben',q:'Welcher Akkord ist die <b>Subdominantparallele (Sp)</b> in G-Dur?',h:'Die Parallele der Subdominante C-Dur.',
+  o:['a-Moll','e-Moll','h-Moll','d-Moll'],a:'a-Moll',e:'S von G-Dur ist C-Dur, dessen Parallele ist a-Moll (II. Stufe).'},
+ {c:'neben',q:'Welcher Akkord ist die <b>Dominantparallele (Dp)</b> in D-Dur?',h:'Die Parallele der Dominante A-Dur.',
+  o:['h-Moll','fis-Moll','e-Moll','cis-Moll'],a:'fis-Moll',e:'D von D-Dur ist A-Dur, dessen Parallele ist fis-Moll (III. Stufe).'},
+ {c:'neben',q:'Welcher Akkord ist die <b>Tonikaparallele (Tp)</b> in F-Dur?',h:'VI. Stufe.',
+  o:['g-Moll','a-Moll','d-Moll','B-Dur'],a:'d-Moll',e:'Die Tp von F-Dur ist d-Moll (d–f–a).'},
+ {c:'neben',q:'Welcher Akkord ist die <b>Subdominantparallele (Sp)</b> in A-Dur?',h:'Die Parallele von D-Dur.',
+  o:['fis-Moll','h-Moll','cis-Moll','e-Moll'],a:'h-Moll',e:'S von A-Dur ist D-Dur, dessen Parallele ist h-Moll (II. Stufe).'},
+ {c:'neben',q:'In C-Dur erklingt <b>e-Moll</b>. Welche Funktion hat der Akkord (Parallel-Deutung)?',h:'III. Stufe.',
+  o:['Tonikaparallele','Subdominantparallele','Dominantparallele','Doppeldominante'],a:'Dominantparallele',
+  e:'e-Moll ist die Parallele der Dominante G-Dur, also die Dp. (Zugleich möglich: Tonika-Gegenklang Tg.)'},
+
+ {c:'moll',q:'Welcher Akkord ist die <b>Dominante</b> in a-Moll?',h:'Achtung: In Moll ist die Dominante ein Dur-Akkord.',
+  o:['e-Moll','E-Dur','G-Dur','d-Moll'],a:'E-Dur',e:'Wegen des Leittons gis ist die Dominante E-Dur (e–gis–h), nicht e-Moll.'},
+ {c:'moll',q:'Welcher Akkord ist die <b>Dominante</b> in e-Moll?',h:'Wieder mit Leitton – also Dur.',
+  o:['h-Moll','H-Dur','D-Dur','G-Dur'],a:'H-Dur',e:'Die Dominante von e-Moll ist H-Dur (h–dis–fis), Leitton dis.'},
+ {c:'moll',q:'Welcher Akkord ist die <b>Subdominante (s)</b> in d-Moll?',h:'Ein Feld links, im Moll-Ring.',
+  o:['g-Moll','a-Moll','A-Dur','F-Dur'],a:'g-Moll',e:'Die Subdominante von d-Moll ist g-Moll (IV. Stufe).'},
+ {c:'moll',q:'Welcher Akkord ist die <b>Tonikaparallele (tP)</b> in h-Moll?',h:'In Moll liegen die Parallelen außen im Dur-Ring.',
+  o:['G-Dur','D-Dur','A-Dur','Fis-Dur'],a:'D-Dur',e:'h-Moll und D-Dur teilen die Vorzeichen – D-Dur ist die Parallele (III. Stufe).'},
+
+ {c:'dd',q:'Welcher Akkord ist die <b>Doppeldominante</b> in C-Dur?',h:'Zwei Felder im Uhrzeigersinn.',
+  o:['G-Dur','D-Dur','A-Dur','F-Dur'],a:'D-Dur',e:'Die DD ist die Dominante der Dominante: Dominante von G-Dur ist D-Dur.'},
+ {c:'dd',q:'Welcher Akkord ist die <b>Doppeldominante</b> in G-Dur?',h:'Ein Feld über die Dominante hinaus.',
+  o:['D-Dur','A-Dur','E-Dur','C-Dur'],a:'A-Dur',e:'D von G-Dur ist D-Dur; dessen Dominante ist A-Dur.'},
+ {c:'dd',q:'Welcher Akkord ist die <b>Doppeldominante</b> in B-Dur?',h:'Zwei Quintschritte aufwärts.',
+  o:['F-Dur','C-Dur','Es-Dur','G-Dur'],a:'C-Dur',e:'D von B-Dur ist F-Dur; dessen Dominante ist C-Dur.'},
+ {c:'dd',q:'Welcher Akkord ist die <b>Doppeldominante</b> in a-Moll?',h:'Die Dominante der Dominante E-Dur.',
+  o:['H-Dur','D-Dur','G-Dur','Fis-Dur'],a:'H-Dur',e:'D von a-Moll ist E-Dur; dessen Dominante ist H-Dur.'},
+
+ {c:'geg',q:'Wie entsteht ein <b>Gegenklang</b> aus einem Dur-Akkord?',h:'Leittonwechsel: ein Ton rückt einen Halbton.',
+  o:['große Terz aufwärts → Moll','große Terz abwärts → Dur','Quinte aufwärts → Dur','kleine Terz abwärts → Moll'],
+  a:'große Terz aufwärts → Moll',e:'Beim Dur-Akkord geht man eine große Terz aufwärts und nimmt den Mollklang; zwei Töne bleiben gemeinsam.'},
+ {c:'geg',q:'Welcher Akkord ist der <b>Tonika-Gegenklang (Tg)</b> in C-Dur?',h:'Von C-Dur eine große Terz aufwärts, Moll.',
+  o:['a-Moll','e-Moll','h-Moll','d-Moll'],a:'e-Moll',e:'C-Dur (c–e–g) und e-Moll (e–g–h) teilen e und g; c rückt einen Halbton zu h.'},
+ {c:'geg',q:'Welcher Akkord ist der <b>Subdominant-Gegenklang (Sg)</b> in C-Dur?',h:'Gegenklang von F-Dur.',
+  o:['d-Moll','a-Moll','e-Moll','g-Moll'],a:'a-Moll',e:'F-Dur (f–a–c) → a-Moll (a–c–e): gemeinsame Töne a und c.'},
+ {c:'geg',q:'Welcher Akkord ist der <b>Dominant-Gegenklang (Dg)</b> in C-Dur?',h:'Gegenklang von G-Dur.',
+  o:['e-Moll','h-Moll','fis-Moll','a-Moll'],a:'h-Moll',e:'G-Dur (g–h–d) → h-Moll (h–d–fis): gemeinsame Töne h und d.'},
+ {c:'geg',q:'Welcher Akkord ist der <b>Tonika-Gegenklang (Tg)</b> in G-Dur?',h:'Von G-Dur eine große Terz aufwärts.',
+  o:['e-Moll','h-Moll','a-Moll','fis-Moll'],a:'h-Moll',e:'G-Dur (g–h–d) → h-Moll (h–d–fis); zwei gemeinsame Töne h und d.'},
+ {c:'geg',q:'In D-Dur erklingt <b>h-Moll</b>. Welche zwei Deutungen sind möglich?',h:'Denk an Parallele und Gegenklang.',
+  o:['Tp und Dg','Sp und Tg','Dp und Sg','Tp und DD'],a:'Tp und Dg',
+  e:'h-Moll ist die Tonikaparallele von D-Dur – und zugleich der Gegenklang der Dominante A-Dur (Dg).'},
+
+ /* ---------- Funktion bestimmen (Akkord → Funktion) ---------- */
+ {c:'analyse',q:'In <b>G-Dur</b> erklingt der Akkord <b>C-Dur</b>. Welche Funktion ist das?',h:'Ein Feld links der Tonika.',
+  o:['Tonika','Subdominante','Dominante','Doppeldominante'],a:'Subdominante',
+  e:'C-Dur ist die IV. Stufe von G-Dur, also die Subdominante.'},
+ {c:'analyse',q:'In <b>D-Dur</b> erklingt der Akkord <b>A-Dur</b>. Welche Funktion ist das?',h:'Ein Feld rechts der Tonika.',
+  o:['Subdominante','Dominante','Tonikaparallele','Doppeldominante'],a:'Dominante',
+  e:'A-Dur ist die V. Stufe von D-Dur – die Dominante mit dem Leitton cis.'},
+ {c:'analyse',q:'In <b>B-Dur</b> erklingt der Akkord <b>Es-Dur</b>. Welche Funktion ist das?',h:'Eine Quinte unter der Tonika.',
+  o:['Dominante','Subdominante','Doppeldominante','Dominantparallele'],a:'Subdominante',
+  e:'Es-Dur ist die IV. Stufe von B-Dur, also die Subdominante.'},
+ {c:'analyse',q:'In <b>Es-Dur</b> erklingt der Akkord <b>B-Dur</b>. Welche Funktion ist das?',h:'Eine Quinte über der Tonika.',
+  o:['Subdominante','Tonika','Dominante','Subdominantparallele'],a:'Dominante',
+  e:'B-Dur ist die V. Stufe von Es-Dur – die Dominante.'},
+ {c:'analyse',q:'In <b>C-Dur</b> erklingt der Akkord <b>d-Moll</b>. Welche Funktion ist das?',h:'II. Stufe – die Parallele der Subdominante.',
+  o:['Tonikaparallele','Subdominantparallele','Dominantparallele','Dominant-Gegenklang'],a:'Subdominantparallele',
+  e:'d-Moll ist die Parallele der Subdominante F-Dur, also die Sp (II. Stufe).'},
+ {c:'analyse',q:'In <b>G-Dur</b> erklingt der Akkord <b>a-Moll</b>. Welche Funktion ist das?',h:'Parallele der Subdominante C-Dur.',
+  o:['Tonikaparallele','Dominantparallele','Subdominantparallele','Tonika-Gegenklang'],a:'Subdominantparallele',
+  e:'S von G-Dur ist C-Dur; dessen Parallele a-Moll ist die Sp (II. Stufe).'},
+ {c:'analyse',q:'In <b>D-Dur</b> erklingt der Akkord <b>e-Moll</b>. Welche Funktion ist das?',h:'Parallele der Subdominante G-Dur.',
+  o:['Subdominantparallele','Tonikaparallele','Dominantparallele','Doppeldominante'],a:'Subdominantparallele',
+  e:'S von D-Dur ist G-Dur; dessen Parallele e-Moll ist die Sp (II. Stufe).'},
+ {c:'analyse',q:'In <b>F-Dur</b> erklingt der Akkord <b>g-Moll</b>. Welche Funktion ist das?',h:'II. Stufe.',
+  o:['Tonikaparallele','Subdominantparallele','Dominantparallele','Subdominante'],a:'Subdominantparallele',
+  e:'S von F-Dur ist B-Dur; dessen Parallele g-Moll ist die Sp.'},
+ {c:'analyse',q:'In <b>C-Dur</b> erklingt der Akkord <b>D-Dur</b>. Welche Funktion ist das?',h:'Ein Dur-Akkord auf der II. Stufe – leiterfremd!',
+  o:['Subdominantparallele','Doppeldominante','Dominante','Tonika-Gegenklang'],a:'Doppeldominante',
+  e:'Auf der II. Stufe steht eigentlich d-Moll. Der Durakkord D-Dur ist die Dominante der Dominante G-Dur, also die DD.'},
+ {c:'analyse',q:'In <b>F-Dur</b> erklingt der Akkord <b>G-Dur</b>. Welche Funktion ist das?',h:'Statt des erwarteten g-Moll steht hier Dur.',
+  o:['Doppeldominante','Subdominantparallele','Dominante','Subdominante'],a:'Doppeldominante',
+  e:'G-Dur ist die Dominante der Dominante C-Dur – die Doppeldominante von F-Dur.'},
+ {c:'analyse',q:'In <b>B-Dur</b> erklingt der Akkord <b>C-Dur</b>. Welche Funktion ist das?',h:'Zwei Felder im Uhrzeigersinn.',
+  o:['Dominante','Subdominantparallele','Doppeldominante','Tonikaparallele'],a:'Doppeldominante',
+  e:'D von B-Dur ist F-Dur; dessen Dominante C-Dur ist die Doppeldominante.'},
+ {c:'analyse',q:'In <b>C-Dur</b> erklingt der Akkord <b>h-Moll</b>. Welche Funktion ist das?',h:'Leiterfremd – denk an den Leittonwechsel.',
+  o:['Dominantparallele','Dominant-Gegenklang','Doppeldominante','Tonika-Gegenklang'],a:'Dominant-Gegenklang',
+  e:'h-Moll (h–d–fis) teilt h und d mit der Dominante G-Dur (g–h–d) – es ist der Dominant-Gegenklang Dg.'},
+ {c:'analyse',q:'In <b>G-Dur</b> erklingt der Akkord <b>fis-Moll</b>. Welche Funktion ist das?',h:'Gegenklang der Dominante D-Dur.',
+  o:['Dominantparallele','Tonika-Gegenklang','Dominant-Gegenklang','Subdominantparallele'],a:'Dominant-Gegenklang',
+  e:'D von G-Dur ist D-Dur (d–fis–a); fis-Moll (fis–a–cis) teilt fis und a – also Dg.'},
+ {c:'analyse',q:'In <b>a-Moll</b> erklingt der Akkord <b>E-Dur</b>. Welche Funktion ist das?',h:'Achtung: Dur-Akkord in Moll.',
+  o:['Tonikaparallele','Dominante','Doppeldominante','Subdominante'],a:'Dominante',
+  e:'E-Dur (e–gis–h) ist die Dominante von a-Moll – Dur wegen des Leittons gis.'},
+ {c:'analyse',q:'In <b>d-Moll</b> erklingt der Akkord <b>A-Dur</b>. Welche Funktion ist das?',h:'V. Stufe mit Leitton cis.',
+  o:['Dominante','Subdominante','Tonikaparallele','Doppeldominante'],a:'Dominante',
+  e:'A-Dur (a–cis–e) ist die Dominante von d-Moll.'},
+ {c:'analyse',q:'In <b>a-Moll</b> erklingt der Akkord <b>C-Dur</b>. Welche Funktion ist das?',h:'Gleiche Vorzeichen wie die Tonika.',
+  o:['Dominante','Tonikaparallele','Subdominantparallele','Doppeldominante'],a:'Tonikaparallele',
+  e:'C-Dur ist die Paralleltonart von a-Moll – die Tonikaparallele (tP, III. Stufe).'},
+ {c:'analyse',q:'In <b>h-Moll</b> erklingt der Akkord <b>D-Dur</b>. Welche Funktion ist das?',h:'Dieselben zwei Kreuze wie die Tonika.',
+  o:['Subdominantparallele','Dominantparallele','Tonikaparallele','Dominante'],a:'Tonikaparallele',
+  e:'D-Dur ist die Paralleltonart von h-Moll – die tP (III. Stufe).'},
+ {c:'analyse',q:'In <b>e-Moll</b> erklingt der Akkord <b>D-Dur</b>. Welche Funktion ist das?',h:'VII. Stufe – die Parallele der Dominante H-Dur.',
+  o:['Tonikaparallele','Dominantparallele','Dominante','Subdominante'],a:'Dominantparallele',
+  e:'D-Dur ist die Parallele der Dominante H-Dur, also die dP (VII. Stufe).'},
+ {c:'analyse',q:'In <b>C-Dur</b> erklingt <b>a-Moll</b>. Welche beiden Deutungen sind möglich?',h:'VI. Stufe – und Gegenklang welcher Funktion?',
+  o:['Tp und Sg','Dp und Tg','Sp und Dg','Tp und DD'],a:'Tp und Sg',
+  e:'a-Moll ist die Tonikaparallele – und zugleich der Gegenklang der Subdominante F-Dur (Sg).'},
+ {c:'analyse',q:'In <b>B-Dur</b> erklingt <b>g-Moll</b>. Welche beiden Deutungen sind möglich?',h:'VI. Stufe – und Gegenklang der Subdominante Es-Dur.',
+  o:['Dp und Tg','Tp und Sg','Sp und Dg','Tp und Dg'],a:'Tp und Sg',
+  e:'g-Moll ist die Tonikaparallele von B-Dur – und der Gegenklang der Subdominante Es-Dur (Sg).'},
+];
+/* Fragenpool -> 20 pro Durchgang, nach Bereichen ausgewogen */
+const QUOTA={haupt:3,neben:3,moll:2,dd:3,geg:3,analyse:6};   // = 20
+const PER_RUN=Object.values(QUOTA).reduce((a,b)=>a+b,0);
+
+/* ================= STATE ================= */
+let quiz=[], idx=0, results=[], startTime=null, timerId=null, playerName='';
+
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function buildQuiz(){
+  const order=['haupt','neben','moll','dd','geg','analyse'];   // didaktische Reihenfolge
+  let out=[];
+  order.forEach(c=>{
+    const pool=shuffle(Q.filter(q=>q.c===c));
+    out=out.concat(pool.slice(0,QUOTA[c]));
+  });
+  return out.map(q=>({...q,o:shuffle(q.o)}));
+}
+function fmt(ms){const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+const el=()=>document.getElementById('app');
+
+/* ================= SCREENS ================= */
+function renderStart(){
+  el().innerHTML=`
+  <div class="start">
+    <div class="eyebrow">Musik · Oberstufe · Harmonielehre</div>
+    <h1>Harmonik-Test</h1>
+    <p class="sub">Funktionen · Doppeldominante · Gegenklänge</p>
+    <p class="intro">20 Fragen quer durch die Tonarten. Nach jedem Klick bekommst du sofort Rückmeldung –
+      bei einer falschen Antwort kannst du es erneut versuchen, bis die richtige gefunden ist.
+      Am Ende erhältst du eine <b>Urkunde</b> mit deinem Ergebnis.</p>
+    <div class="facts">
+      <div class="fact"><div class="k">Umfang</div><div class="v">20 Fragen, 5 Bereiche</div></div>
+      <div class="fact"><div class="k">Bewertung</div><div class="v">Klicks bis zur Lösung zählen</div></div>
+      <div class="fact"><div class="k">Zeit</div><div class="v">läuft mit, ohne Limit</div></div>
+      <div class="fact"><div class="k">Hilfe</div><div class="v">kurzer Denkanstoß je Frage</div></div>
+    </div>
+    <div class="nameinput">
+      <label for="nm">Name für die Urkunde (optional)</label>
+      <input id="nm" maxlength="34" placeholder="Dein Name" autocomplete="off">
+    </div>
+    <div class="btnrow"><button class="btn primary" id="go">Test starten</button></div>
+    <p class="foot">Läuft offline im Browser · keine Anmeldung, keine Datenspeicherung.</p>
+  </div>`;
+  const nm=document.getElementById('nm');
+  const start=()=>{ac();playerName=(nm.value||'').trim();quiz=buildQuiz();idx=0;results=[];
+    startTime=Date.now();clearInterval(timerId);
+    timerId=setInterval(()=>{const t=document.getElementById('timer');if(t)t.textContent=fmt(Date.now()-startTime);},500);
+    renderQuestion();};
+  document.getElementById('go').onclick=start;
+  nm.addEventListener('keydown',e=>{if(e.key==='Enter')start();});
+}
+
+function renderQuestion(){
+  const q=quiz[idx];
+  const cat=CAT[q.c];
+  const pct=Math.round((idx/quiz.length)*100);
+  el().innerHTML=`
+   <div class="hud noprint">
+     <span class="qn">Frage <b>${idx+1}</b> von ${quiz.length}</span>
+     <span class="right"><span class="timer" id="timer">${fmt(Date.now()-startTime)}</span></span>
+     <div class="bar" style="flex-basis:100%"><i style="width:${pct}%"></i></div>
+   </div>
+   <div class="qcard">
+     <span class="tag" style="background:${cat.color}">${cat.label}</span>
+     <p class="q">${q.q}</p>
+     <p class="qhint">💡 ${q.h}</p>
+     <div class="opts" id="opts">
+       ${q.o.map((o,i)=>`<button class="opt" data-v="${o}">${o}</button>`).join('')}
+     </div>
+     <div class="fb" id="fb"></div>
+     <div class="tries" id="tries"></div>
+     <div class="nextrow" id="nextrow"></div>
+   </div>`;
+  let tries=0, done=false;
+  const fb=document.getElementById('fb'), triesEl=document.getElementById('tries');
+  document.querySelectorAll('.opt').forEach(b=>{
+    b.onclick=()=>{
+      if(done)return;
+      tries++;
+      const val=b.dataset.v;
+      triesEl.textContent='Versuche: '+tries;
+      if(val===q.a){
+        done=true;
+        b.classList.add('correct');
+        document.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+        fb.className='fb show good';
+        fb.innerHTML=(tries===1?'<b>Richtig!</b> ':'<b>Richtig – im '+tries+'. Versuch.</b> ')+q.e;
+        okSound();
+        results.push({c:q.c,q:q.q,tries,first:tries===1});
+        document.getElementById('nextrow').innerHTML=
+          `<button class="btn primary" id="next">${idx+1<quiz.length?'Weiter →':'Zur Urkunde →'}</button>`;
+        document.getElementById('next').onclick=()=>{idx++;idx<quiz.length?renderQuestion():renderCert();};
+      } else {
+        b.classList.add('wrong'); b.disabled=true;
+        fb.className='fb show err';
+        fb.innerHTML='<b>Noch nicht richtig.</b> Überlege noch einmal – du kannst es erneut versuchen.';
+        errSound();
+      }
+    };
+  });
+}
+
+function grade(firstTry,total){
+  const p=firstTry/total;
+  if(p>=0.95)return['Mit Auszeichnung bestanden','#2f7d4f'];
+  if(p>=0.85)return['Sehr gut bestanden','#2f7d4f'];
+  if(p>=0.70)return['Gut bestanden','#5c4712'];
+  if(p>=0.55)return['Bestanden','#5c4712'];
+  return['Teilgenommen – weiter üben!','#8a5200'];
+}
+
+/* Gesamturteil: Soll noch einmal geübt werden? */
+function verdictText(firstTry,total){
+  const p=firstTry/total;
+  if(p>=0.85) return {h:'✓ Du kannst weitergehen.',
+    t:'Die Funktionsharmonik sitzt sicher. Ein kurzer Blick auf die unten genannten Punkte genügt – danach kannst du dich an die Analyse ganzer Musikstücke wagen.',
+    col:'#2f7d4f'};
+  if(p>=0.70) return {h:'◐ Fast geschafft – gezielt nachüben.',
+    t:'Die Grundlagen stehen. Übe gezielt die unten markierten Bereiche noch einmal, dann ist der Stoff sicher.',
+    col:'#5c4712'};
+  if(p>=0.55) return {h:'◐ Bitte noch einmal üben.',
+    t:'Vieles ist richtig, aber mehrere Bereiche sind noch wacklig. Arbeite die markierten Themen mit dem Quintenzirkel durch und wiederhole den Test.',
+    col:'#8a5200'};
+  return {h:'✗ Wiederholung empfohlen.',
+    t:'Die Zuordnung der Funktionen ist noch unsicher. Geh das Arbeitsblatt und den interaktiven Quintenzirkel in Ruhe durch und starte den Test danach erneut.',
+    col:'#a8402f'};
+}
+
+/* Bewertung je Themenbereich */
+const TIPS={
+  haupt:'Tonika suchen, dann die beiden Nachbarn im Quintenzirkel – links die Subdominante, rechts die Dominante.',
+  neben:'Die Parallele liegt radial gegenüber im anderen Ring (Dur ↔ Moll).',
+  moll:'Die Tonika liegt im Innenring – und die Dominante ist wegen des Leittons immer ein Dur-Akkord.',
+  dd:'Von der Tonika zwei Felder im Uhrzeigersinn weitergehen – ein Feld über die Dominante hinaus.',
+  geg:'Dur → große Terz aufwärts (Moll), Moll → große Terz abwärts (Dur); zwei Töne bleiben gemeinsam.',
+  analyse:'Immer zuerst die Tonika im Kreis suchen, dann den gefragten Akkord – seine Lage verrät die Funktion. Ein leiterfremder Durakkord ist oft die Doppeldominante.'
+};
+function catStats(){
+  const m={};
+  results.forEach(r=>{ const s=m[r.c]||(m[r.c]={n:0,first:0,clicks:0});
+    s.n++; s.clicks+=r.tries; if(r.first)s.first++; });
+  return m;
+}
+function catVerdict(p){
+  if(p>=0.99)return['sicher','#2f7d4f'];
+  if(p>=0.67)return['solide','#5c8a3f'];
+  if(p>=0.34)return['üben','#b8791a'];
+  return['wiederholen','#a8402f'];
+}
+
+function renderCert(){
+  clearInterval(timerId);
+  const total=results.length;
+  const firstTry=results.filter(r=>r.first).length;
+  const withErr=total-firstTry;
+  const clicks=results.reduce((s,r)=>s+r.tries,0);
+  const avg=(clicks/total).toFixed(1);
+  const time=fmt(Date.now()-startTime);
+  const [g,gc]=grade(firstTry,total);
+  const dateStr=new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'});
+  const who=playerName||'Teilnehmerin / Teilnehmer';
+
+  const rows=results.map((r,i)=>{
+    const col=r.first?'#3fae6b':(r.tries===2?'#d9a13a':'#d6604d');
+    const plain=r.q.replace(/<[^>]+>/g,'');
+    return `<div class="brow"><span class="dot" style="background:${col}"></span>
+      <span class="txt">${i+1}. ${plain}</span>
+      <span class="tr">${r.tries} ${r.tries===1?'Klick':'Klicks'}</span></div>`;
+  }).join('');
+
+  // --- Auswertung nach Bereichen ---
+  const cs=catStats();
+  const order=['haupt','neben','moll','dd','geg','analyse'];
+  const catRows=order.filter(c=>cs[c]).map(c=>{
+    const s=cs[c], p=s.first/s.n, [vw,vc]=catVerdict(p);
+    return `<div class="crow">
+      <span class="cname" style="color:${CAT[c].color}">${CAT[c].label}</span>
+      <span class="cbar"><i style="width:${Math.round(p*100)}%;background:${vc}"></i></span>
+      <span class="cscore">${s.first}/${s.n}</span>
+      <span class="cverd" style="color:${vc}">${vw}</span></div>`;
+  }).join('');
+  const weak=order.filter(c=>cs[c] && (cs[c].first/cs[c].n)<0.67);
+  const recList = weak.length
+    ? weak.map(c=>`<li><b>${CAT[c].label}:</b> ${TIPS[c]}</li>`).join('')
+      + `<li style="margin-top:7px;color:#5c4712"><b>Womit?</b> Nimm den interaktiven Quintenzirkel: Tonart antippen,
+         die passende Anzeige (Doppeldominante bzw. Gegenklänge) einschalten und die Akkorde anhören.</li>`
+    : `<li>Alle Bereiche sitzen. Wende die Funktionen jetzt an einem echten Musikstück an – Tonart bestimmen, Akkorde im Quintenzirkel nachschlagen, Funktionen notieren.</li>`;
+  const recHead = weak.length
+    ? `Das solltest du noch einmal üben`
+    : `So geht es weiter`;
+  const v=verdictText(firstTry,total);
+
+  el().innerHTML=`
+   <div class="cert">
+    <div class="cert-in">
+      <div class="kicker">Musik · Harmonielehre</div>
+      <h2>Urkunde</h2>
+      <div class="rule"></div>
+      <p class="for">verliehen an</p>
+      <div class="who">${who}</div>
+      <p class="lead">für die erfolgreiche Bearbeitung des Tests zur <b>Funktionsharmonik</b> –
+        Haupt- und Nebenfunktionen, Doppeldominante und Gegenklänge in verschiedenen Tonarten.</p>
+
+      <div class="grid">
+        <div class="stat"><div class="n ok">${firstTry}</div><div class="l">AUF ANHIEB RICHTIG</div></div>
+        <div class="stat"><div class="n bad">${withErr}</div><div class="l">MIT FEHLVERSUCH</div></div>
+        <div class="stat"><div class="n br">${clicks}</div><div class="l">KLICKS GESAMT</div></div>
+        <div class="stat"><div class="n br">${avg}</div><div class="l">KLICKS JE FRAGE</div></div>
+        <div class="stat"><div class="n tm">${time}</div><div class="l">BEARBEITUNGSZEIT</div></div>
+      </div>
+
+      <div class="grade" style="color:${gc}">${g} · ${firstTry} von ${total}</div>
+
+      <div class="verdict" style="border-left:4px solid ${v.col}">
+        <div class="vh" style="color:${v.col}">${v.h}</div>
+        <p>${v.t}</p>
+      </div>
+
+      <div class="cats">
+        <h3>Ergebnis nach Themenbereichen</h3>
+        ${catRows}
+      </div>
+
+      <div class="rec">
+        <div class="rh">${recHead}</div>
+        <ul>${recList}</ul>
+      </div>
+
+      <div class="seal">𝄞</div>
+
+      <div class="sig">
+        <div>${dateStr}<br>Datum</div>
+        <div>Harmonik-Test · 20 Fragen<br>Prüfungsformat</div>
+        <div>Musik, Oberstufe<br>Fachbereich</div>
+      </div>
+
+      <div class="breakdown">
+        <h3>Im Einzelnen</h3>
+        ${rows}
+      </div>
+    </div>
+   </div>
+   <div class="note noprint"><b>Hinweis:</b> „Klicks je Frage“ zeigt, wie sicher die Antworten saßen –
+     1,0 bedeutet, dass jede Frage sofort richtig beantwortet wurde.</div>
+   <div class="btnrow noprint">
+     <button class="btn primary" id="again">Neuer Versuch</button>
+     <button class="btn ghost" id="print">Urkunde drucken</button>
+   </div>`;
+  fanfare();
+  document.getElementById('again').onclick=()=>{clearInterval(timerId);renderStart();};
+  document.getElementById('print').onclick=()=>window.print();
+}
+
+renderStart();
+</script>
+</body>
+</html>
