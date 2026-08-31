@@ -1,0 +1,1453 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonielabor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#efece1;
+    --paper-2:#e2ddc9;
+    --card:#faf8f1;
+    --card-2:#f2efe3;
+    --line:#d8d2bd;
+    --line-strong:#c2bb9f;
+    --ink:#23201a;
+    --ink-soft:#665f4f;
+    --ink-faint:#948c76;
+    --accent:#1f6358;
+    --accent-strong:#123f38;
+    --accent-tint:#dce8e2;
+    --gold:#a97a26;
+    --gold-tint:#f0e2c4;
+    --slate:#3b5b8c;
+    --slate-tint:#dde5f0;
+    --rose:#8c3b3b;
+    --rose-tint:#f0dcdc;
+    --white-key:#fffdf6;
+    --white-key-edge:#c9c1a6;
+    --black-key:#241f19;
+    --black-key-edge:#000;
+    --key-active:#1f6358;
+    --focus:#1f6358;
+    --shadow: 0 1px 2px rgba(35,32,26,.06), 0 6px 20px rgba(35,32,26,.07);
+    font-size:16px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1a1913;
+      --paper-2:#242219;
+      --card:#211f17;
+      --card-2:#28251b;
+      --line:#3a3626;
+      --line-strong:#4a452f;
+      --ink:#ece6d6;
+      --ink-soft:#bcb49c;
+      --ink-faint:#8a836d;
+      --accent:#5fb3a1;
+      --accent-strong:#8fd0c0;
+      --accent-tint:#203330;
+      --gold:#dcab5c;
+      --gold-tint:#3a3020;
+      --slate:#8fa8d6;
+      --slate-tint:#232d3d;
+      --rose:#d18787;
+      --rose-tint:#382323;
+      --white-key:#e9e4d3;
+      --white-key-edge:#8f886f;
+      --black-key:#0e0d0a;
+      --black-key-edge:#000;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1a1913;
+    --paper-2:#242219;
+    --card:#211f17;
+    --card-2:#28251b;
+    --line:#3a3626;
+    --line-strong:#4a452f;
+    --ink:#ece6d6;
+    --ink-soft:#bcb49c;
+    --ink-faint:#8a836d;
+    --accent:#5fb3a1;
+    --accent-strong:#8fd0c0;
+    --accent-tint:#203330;
+    --gold:#dcab5c;
+    --gold-tint:#3a3020;
+    --slate:#8fa8d6;
+    --slate-tint:#232d3d;
+    --rose:#d18787;
+    --rose-tint:#382323;
+    --white-key:#e9e4d3;
+    --white-key-edge:#8f886f;
+    --black-key:#0e0d0a;
+    --black-key-edge:#000;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Work Sans", "Segoe UI", system-ui, sans-serif;
+    line-height:1.45;
+  }
+  #app{
+    max-width:980px;
+    margin:0 auto;
+    padding:28px 18px 80px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  h1,h2,h3{
+    font-family:"Fraunces", Georgia, serif;
+    font-weight:600;
+    text-wrap:balance;
+    margin:0;
+  }
+  .masthead{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line);
+  }
+  .masthead h1{
+    font-size:1.9rem;
+    letter-spacing:-.01em;
+  }
+  .masthead p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:.95rem;
+    max-width:60ch;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.7rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 18px 20px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .card > .card-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .card h2{ font-size:1.2rem; }
+  .hint{ color:var(--ink-faint); font-size:.83rem; }
+
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:1px solid var(--line-strong);
+    background:var(--card-2);
+    color:var(--ink);
+    border-radius:8px;
+    padding:7px 12px;
+    font-size:.85rem;
+    transition:background .12s, color .12s, border-color .12s, transform .05s;
+  }
+  button:hover{ border-color:var(--accent); }
+  button:active{ transform:translateY(1px); }
+  button:focus-visible, [tabindex]:focus-visible, .key:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:2px;
+  }
+  button.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+    font-weight:600;
+  }
+  button.primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
+  button.ghost{ background:transparent; }
+  button.small{ padding:4px 9px; font-size:.75rem; border-radius:6px; }
+  button:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .tabbar{
+    display:flex;
+    gap:6px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:4px;
+    width:fit-content;
+  }
+  .tabbar button{
+    border:none;
+    background:transparent;
+    padding:7px 14px;
+    border-radius:7px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .tabbar button.active{
+    background:var(--card);
+    color:var(--accent);
+    box-shadow:0 1px 3px rgba(0,0,0,.12);
+  }
+
+  .pillrow{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .pill{
+    border:1px solid var(--line-strong);
+    background:var(--card-2);
+    border-radius:999px;
+    padding:5px 12px;
+    font-size:.78rem;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-family:"IBM Plex Mono", monospace;
+  }
+  .pill.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  .scroller{ overflow-x:auto; padding-bottom:4px; }
+  .scroller::-webkit-scrollbar{ height:8px; }
+  .scroller::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
+
+  /* piano */
+  .piano-wrap{ display:flex; justify-content:center; padding:6px 0 2px; }
+  .key{ cursor:pointer; }
+  .key rect{ transition:fill .08s; }
+  .key.white rect{ fill:var(--white-key); stroke:var(--white-key-edge); stroke-width:1; }
+  .key.white.active rect{ fill:var(--key-active); }
+  .key.black rect{ fill:var(--black-key); stroke:var(--black-key-edge); stroke-width:1; }
+  .key.black.active rect{ fill:var(--gold); }
+  .key text{
+    font-family:"IBM Plex Mono", monospace;
+    pointer-events:auto;
+    cursor:pointer;
+  }
+  .key.white text{ fill:var(--ink-soft); font-size:8.5px; }
+  .key.white.active text{ fill:#fff; }
+  .key.black text{ fill:#d9d4c4; font-size:7.6px; }
+  .key.black.active text{ fill:#241f19; }
+  .key text:hover{ text-decoration:underline; }
+  .octave-label{ font-family:"IBM Plex Mono",monospace; font-size:9px; fill:var(--ink-faint); }
+
+  /* staff */
+  .staff-controls{ display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start; }
+  .control-group{ display:flex; flex-direction:column; gap:6px; }
+  .control-group .label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); font-weight:600; }
+  .accidental-btn{
+    font-family:"Fraunces", serif;
+    font-size:1.05rem;
+    min-width:38px;
+    text-align:center;
+  }
+  .accidental-btn.active{ background:var(--gold); border-color:var(--gold); color:#241f19; font-weight:700; }
+  .staff-note-slot circle.hit{ fill:transparent; }
+  .staff-note-slot:hover circle.hit{ fill:var(--accent-tint); }
+  .staff-note-slot .head{ fill:var(--ink); }
+  .staff-note-slot.active .head{ fill:var(--accent); }
+  .staff-note-slot .acc{ font-family:"Fraunces", serif; fill:var(--ink); font-size:15px; }
+  .staff-note-slot.active .acc{ fill:var(--accent); }
+  .staffline{ stroke:var(--ink-soft); stroke-width:1.1; }
+  .ledger{ stroke:var(--ink-soft); stroke-width:1.1; }
+  .clef-glyph{ font-family:"Fraunces", serif; fill:var(--ink); }
+  .staff-caption{ font-family:"IBM Plex Mono",monospace; font-size:.72rem; fill:var(--ink-faint); }
+  .keysig-badge{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.78rem;
+    color:var(--ink-soft);
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:6px 10px;
+    width:fit-content;
+  }
+
+  /* chips */
+  .chiprow{ display:flex; gap:7px; flex-wrap:wrap; min-height:32px; align-items:center; }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--paper-2);
+    border:1px solid var(--line-strong);
+    border-radius:999px;
+    padding:4px 6px 4px 12px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.82rem;
+  }
+  .chip button{
+    border:none;
+    background:transparent;
+    padding:2px 6px;
+    border-radius:999px;
+    color:var(--ink-faint);
+    font-size:.8rem;
+    line-height:1;
+  }
+  .chip button:hover{ background:var(--rose-tint); color:var(--rose); }
+  .empty-note{ color:var(--ink-faint); font-size:.85rem; font-style:italic; }
+
+  /* recognized chord */
+  .readout{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    padding:14px 16px;
+    background:var(--card-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+  .readout .name{
+    font-family:"Fraunces", serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:1.5rem;
+    color:var(--accent-strong);
+  }
+  .readout .sub{ font-size:.87rem; color:var(--ink-soft); }
+  .readout .symbol{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.85rem;
+    color:var(--ink-faint);
+  }
+  .func-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:700;
+    font-size:.8rem;
+    padding:3px 10px;
+    border-radius:7px;
+  }
+  .func-t{ background:var(--accent-tint); color:var(--accent-strong); }
+  .func-s{ background:var(--slate-tint); color:var(--slate); }
+  .func-d{ background:var(--gold-tint); color:var(--gold); }
+  .func-x{ background:var(--paper-2); color:var(--ink-soft); border:1px dashed var(--line-strong); }
+
+  /* key panel */
+  .key-row{ display:flex; flex-direction:column; gap:6px; }
+  .keysig-thumbrow{ display:flex; gap:8px; padding-bottom:4px; }
+  .keysig-thumb{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    padding:6px 7px 7px;
+    border:1.5px solid var(--line-strong);
+    border-radius:10px;
+    background:var(--card-2);
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+  .keysig-thumb:hover{ border-color:var(--accent); }
+  .keysig-thumb.active{ border-color:var(--accent); background:var(--accent-tint); }
+  .keysig-thumb svg{ display:block; }
+  .keysig-thumb .cap{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.66rem;
+    color:var(--ink-soft);
+    text-align:center;
+    line-height:1.3;
+    white-space:nowrap;
+  }
+  .keysig-thumb.active .cap{ color:var(--accent-strong); font-weight:600; }
+  .keysig-acc{ font-family:"Fraunces", serif; fill:var(--ink); }
+  .keysig-thumb.active .keysig-acc{ fill:var(--accent-strong); }
+  .key-candidates{ display:flex; gap:8px; flex-wrap:wrap; }
+  .key-candidate{
+    border:1.5px solid var(--line-strong);
+    background:var(--card-2);
+    border-radius:10px;
+    padding:8px 14px;
+    cursor:pointer;
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:1rem;
+  }
+  .key-candidate.chosen{ border-color:var(--accent); background:var(--accent-tint); color:var(--accent-strong); }
+  select{
+    font-family:"IBM Plex Mono", monospace;
+    padding:6px 8px;
+    border-radius:8px;
+    border:1px solid var(--line-strong);
+    background:var(--card-2);
+    color:var(--ink);
+  }
+  .active-key-banner{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.85rem;
+    color:var(--accent-strong);
+    background:var(--accent-tint);
+    border-radius:8px;
+    padding:8px 12px;
+    width:fit-content;
+  }
+
+  /* sequence */
+  .sequence{ display:flex; align-items:stretch; gap:6px; flex-wrap:nowrap; }
+  .seq-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    background:var(--card-2);
+    border:1px solid var(--line-strong);
+    border-radius:10px;
+    padding:10px 14px;
+    min-width:76px;
+    position:relative;
+  }
+  .seq-card .sym{ font-family:"Fraunces", serif; font-weight:700; font-size:1.15rem; }
+  .seq-card .func{ font-family:"IBM Plex Mono",monospace; font-size:.78rem; }
+  .seq-card .del{
+    position:absolute; top:-8px; right:-8px;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--rose); color:#fff; border:none;
+    font-size:.7rem; line-height:1; padding:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .seq-arrow{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--ink-faint); font-size:1.1rem; min-width:34px; gap:2px;
+  }
+  .seq-arrow .cadence{ font-size:.62rem; font-family:"IBM Plex Mono",monospace; color:var(--gold); text-align:center; white-space:nowrap; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 18px; font-size:.78rem; color:var(--ink-soft); }
+  .legend span b{ color:var(--ink); font-family:"IBM Plex Mono",monospace; }
+
+  footer{ text-align:center; color:var(--ink-faint); font-size:.75rem; padding-top:6px; }
+  a{ color:var(--accent); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="masthead">
+    <span class="eyebrow">Oberstufe Musik &middot; Harmonielehre</span>
+    <h1>Harmonielabor</h1>
+    <p>Töne über Klaviatur oder Notenzeile eingeben &ndash; das Labor erkennt den gebildeten Akkord samt Umkehrung. Mehrere Akkorde lassen sich zu einer Folge aneinanderreihen und funktionsharmonisch analysieren.</p>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="card">
+    <div class="card-head">
+      <h2>1 &middot; Töne eingeben</h2>
+      <div class="tabbar" id="inputTabbar">
+        <button data-tab="piano" class="active">Klaviatur</button>
+        <button data-tab="staff">Notenzeile</button>
+      </div>
+    </div>
+
+    <div id="pianoPane">
+      <div class="scroller"><div class="piano-wrap" id="pianoSvgHost"></div></div>
+      <p class="hint">Taste klicken = Ton mit Standard-Schreibweise hinzufügen/entfernen. Direkt auf einen der Notennamen klicken = diese enharmonische Schreibweise wählen. Das Versetzungszeichen-Werkzeug unten wirkt auch beim Klavier auf schwarze Tasten.</p>
+    </div>
+
+    <div id="staffPane" style="display:none;">
+      <div class="staff-controls">
+        <div class="control-group">
+          <span class="label">Schlüssel</span>
+          <div class="pillrow" id="clefChooser">
+            <button class="pill active" data-clef="treble">Violinschlüssel</button>
+            <button class="pill" data-clef="alto">C-Schlüssel (Bratsche)</button>
+            <button class="pill" data-clef="bass">Bassschlüssel</button>
+            <button class="pill" data-clef="all">alle gleichzeitig</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="label">Versetzungszeichen</span>
+          <div class="pillrow" id="accidentalToolbar">
+            <button class="accidental-btn active" data-acc="auto" title="automatisch (Vorzeichen der Tonart)">Vz</button>
+            <button class="accidental-btn" data-acc="-2" title="Doppel-B">𝄫</button>
+            <button class="accidental-btn" data-acc="-1" title="B">♭</button>
+            <button class="accidental-btn" data-acc="0" title="Auflösungszeichen">♮</button>
+            <button class="accidental-btn" data-acc="1" title="Kreuz">♯</button>
+            <button class="accidental-btn" data-acc="2" title="Doppelkreuz">𝄪</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="label">Vorzeichen (Tonart, Abschnitt 3)</span>
+          <div class="keysig-badge" id="staffKeysigBadge">keine Vorzeichen</div>
+        </div>
+      </div>
+      <div class="scroller"><div id="staffSvgHost"></div></div>
+      <p class="hint">Auf eine Notenposition klicken, um den Ton hinzuzufügen; erneutes Klicken entfernt ihn. Ohne gewähltes Versetzungszeichen gilt automatisch das aktuelle Vorzeichen aus Abschnitt 3.</p>
+    </div>
+
+    <div class="control-group">
+      <span class="label">Aktuelle Töne</span>
+      <div class="chiprow" id="chipRow"></div>
+      <div>
+        <button class="ghost small" id="clearAllBtn">Alles leeren</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOGNIZED CHORD -->
+  <div class="card">
+    <div class="card-head"><h2>2 &middot; Erkannter Akkord</h2></div>
+    <div class="readout" id="chordReadout"></div>
+    <div>
+      <button class="primary" id="addToSequenceBtn" disabled>Akkord zur Folge hinzufügen &rarr;</button>
+    </div>
+  </div>
+
+  <!-- KEY -->
+  <div class="card">
+    <div class="card-head"><h2>3 &middot; Tonart festlegen</h2></div>
+    <p class="hint">Vorzeichen anklicken (Kreuze oder Be&mdash;nicht beides gleichzeitig), dann optional den Schlusston des Stücks wählen: Er hilft, zwischen Dur und der parallelen Molltonart zu unterscheiden.</p>
+    <div class="key-row">
+      <span class="label" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:600;">Vorzeichenbild anklicken (wie am Zeilenbeginn im Notentext, hier im Violinschlüssel)</span>
+      <div class="pillrow" id="noAccidentalRow"></div>
+      <div class="hint" style="margin-top:2px;">Kreuz-Vorzeichen</div>
+      <div class="scroller"><div class="keysig-thumbrow" id="sharpThumbRow"></div></div>
+      <div class="hint" style="margin-top:2px;">Be-Vorzeichen</div>
+      <div class="scroller"><div class="keysig-thumbrow" id="flatThumbRow"></div></div>
+    </div>
+    <div class="key-row">
+      <span class="label" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:600;">Schlusston des Stücks (optional, zur Hilfe)</span>
+      <select id="finalNoteSelect"><option value="">&ndash; wählen &ndash;</option></select>
+    </div>
+    <div class="key-row">
+      <span class="label" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:600;">Tonart wählen</span>
+      <div class="key-candidates" id="keyCandidates"></div>
+    </div>
+    <div id="activeKeyBanner"></div>
+  </div>
+
+  <!-- SEQUENCE -->
+  <div class="card">
+    <div class="card-head">
+      <h2>4 &middot; Akkordfolge &amp; Funktionsanalyse</h2>
+      <button class="ghost small" id="resetSequenceBtn">Folge zurücksetzen</button>
+    </div>
+    <div class="scroller"><div class="sequence" id="sequenceHost"></div></div>
+    <div class="legend">
+      <span><b>T</b> Tonika &middot; <b>S</b> Subdominante &middot; <b>D</b> Dominante</span>
+      <span><b>Tp/Sp/Dp</b> Parallelklänge</span>
+      <span><b>DD</b> Doppeldominante &middot; <b>D/x</b> Zwischendominante</span>
+      <span><b>N</b> Neapolitaner</span>
+    </div>
+  </div>
+
+  <footer>Vereinfachte Funktionsanalyse nach gängiger Schulkonvention (Dur-Moll-Tonalität) &middot; deutsche Notenbezeichnung</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ Grundlagen: Notennamen ============ */
+  var LETTERS = ['C','D','E','F','G','A','H'];
+  var LETTER_BASE = [0,2,4,5,7,9,11];
+
+  function mod12(n){ return ((n % 12) + 12) % 12; }
+
+  function germanName(letterIdx, offset){
+    var L = LETTERS[letterIdx];
+    if(offset === 0) return L;
+    if(offset === 1) return (L === 'H') ? 'His' : (L + 'is');
+    if(offset === 2) return (L === 'H') ? 'Hisis' : (L + 'isis');
+    if(offset === -1){
+      if(L === 'H') return 'B';
+      if(L === 'E' || L === 'A') return L + 's';
+      return L + 'es';
+    }
+    if(offset === -2){
+      if(L === 'H') return 'Heses';
+      if(L === 'E') return 'Eses';
+      if(L === 'A') return 'Ases';
+      return L + 'eses';
+    }
+    return L + '?';
+  }
+
+  function spell(letterChar, offset){
+    var idx = LETTERS.indexOf(letterChar);
+    return { letterIdx: idx, offset: offset, name: germanName(idx, offset) };
+  }
+
+  function pitchClassOf(letterIdx, offset){ return mod12(LETTER_BASE[letterIdx] + offset); }
+
+  function midiFor(letterIdx, octave, offset){ return (octave + 1) * 12 + LETTER_BASE[letterIdx] + offset; }
+
+  // enharmonische Doppel-/Mehrfachbezeichnungen je Tonhöhenklasse (0..11)
+  var NOTE_SPELLINGS = [
+    [ spell('C',0),  spell('H',1)  ],                      // 0  C / His
+    [ spell('C',1),  spell('D',-1) ],                      // 1  Cis / Des
+    [ spell('D',0),  spell('C',2), spell('E',-2) ],        // 2  D / Cisis / Eses
+    [ spell('D',1),  spell('E',-1) ],                      // 3  Dis / Es
+    [ spell('E',0),  spell('F',-1) ],                      // 4  E / Fes
+    [ spell('F',0),  spell('E',1)  ],                      // 5  F / Eis
+    [ spell('F',1),  spell('G',-1) ],                      // 6  Fis / Ges
+    [ spell('G',0),  spell('F',2), spell('A',-2) ],        // 7  G / Fisis / Ases
+    [ spell('G',1),  spell('A',-1) ],                      // 8  Gis / As
+    [ spell('A',0),  spell('G',2), spell('H',-2) ],        // 9  A / Gisis / Heses
+    [ spell('A',1),  spell('H',-1) ],                      // 10 Ais / B
+    [ spell('H',0),  spell('C',-1) ]                       // 11 H / Ces
+  ];
+
+  function chooseSpelling(pc, preferFlats){
+    var opts = NOTE_SPELLINGS[pc];
+    var nat = null;
+    for(var i=0;i<opts.length;i++){ if(opts[i].offset === 0) nat = opts[i]; }
+    if(nat) return nat;
+    if(preferFlats){
+      for(i=0;i<opts.length;i++){ if(opts[i].offset < 0) return opts[i]; }
+    } else {
+      for(i=0;i<opts.length;i++){ if(opts[i].offset > 0) return opts[i]; }
+    }
+    return opts[0];
+  }
+
+  function lowerFirst(name){ return name.charAt(0).toLowerCase() + name.slice(1); }
+
+  /* ============ Tonart-Tabellen ============ */
+  var MAJOR_NAME_BY_SHARPS = ['C','G','D','A','E','H','Fis','Cis'];
+  var MAJOR_NAME_BY_FLATS  = ['C','F','B','Es','As','Des','Ges','Ces'];
+  var MINOR_NAME_BY_SHARPS = ['a','e','h','fis','cis','gis','dis','ais'];
+  var MINOR_NAME_BY_FLATS  = ['a','d','g','c','f','b','es','as'];
+
+  function parseGermanName(name){
+    if(name === 'B') return { letterIdx: LETTERS.indexOf('H'), offset: -1 };
+    if(name === 'Heses' || name === 'heses') return { letterIdx: LETTERS.indexOf('H'), offset: -2 };
+    var letter = name.charAt(0).toUpperCase();
+    var rest = name.slice(1);
+    var letterIdx = LETTERS.indexOf(letter);
+    if(rest === '') return { letterIdx: letterIdx, offset: 0 };
+    if(rest === 'isis') return { letterIdx: letterIdx, offset: 2 };
+    if(rest === 'is') return { letterIdx: letterIdx, offset: 1 };
+    if(rest === 'eses') return { letterIdx: letterIdx, offset: -2 };
+    if(rest === 'es') return { letterIdx: letterIdx, offset: -1 };
+    if(rest === 's') return { letterIdx: letterIdx, offset: -1 };
+    return { letterIdx: letterIdx, offset: 0 };
+  }
+
+  // Reihenfolge der Vorzeichen
+  var SHARP_ORDER = ['Fis','Cis','Gis','Dis','Ais','Eis','His'];
+  var SHARP_LETTERS = ['F','C','G','D','A','E','H'];
+  var FLAT_ORDER = ['B','Es','As','Des','Ges','Ces','Fes'];
+  var FLAT_LETTERS = ['H','E','A','D','G','C','F'];
+
+  // Standardpositionen der Vorzeichen im Violinschlüssel (wie zu Beginn einer Notenzeile
+  // gedruckt), als Slot relativ zur Grundlinie E4 = Slot 0 (ein Slot = ein diatonischer Schritt).
+  var SHARP_TREBLE_SLOTS = [8, 5, 9, 6, 3, 7, 4];   // Fis Cis Gis Dis Ais Eis His
+  var FLAT_TREBLE_SLOTS  = [4, 7, 3, 6, 9, 5, 8];   // B Es As Des Ges Ces Fes
+
+  function renderKeySigThumb(n, type){
+    var half = 4.2, baseY = 44, w = 118, h = 56;
+    var svg = ['<svg width="', w, '" height="', h, '" viewBox="0 0 ', w, ' ', h, '">'];
+    for(var l=0; l<=8; l+=2){
+      var y = baseY - l*half;
+      svg.push('<line class="staffline" x1="4" y1="', y, '" x2="', w-4, '" y2="', y, '"></line>');
+    }
+    svg.push('<text class="clef-glyph" x="4" y="', baseY+8, '" font-size="26">𝄞</text>');
+    if(n > 0){
+      var slots = type === 'sharp' ? SHARP_TREBLE_SLOTS : FLAT_TREBLE_SLOTS;
+      var glyph = type === 'sharp' ? '♯' : '♭';
+      var startX = 30;
+      for(var i=0; i<n; i++){
+        var sy = baseY - slots[i]*half;
+        var sx = startX + i*12;
+        svg.push('<text class="keysig-acc" x="', sx, '" y="', sy+4, '" font-size="15">', glyph, '</text>');
+      }
+    }
+    svg.push('</svg>');
+    return svg.join('');
+  }
+
+  function keySignatureOffsetForLetter(letterChar, sharps, flats){
+    if(sharps > 0){
+      var si = SHARP_LETTERS.indexOf(letterChar);
+      if(si >= 0 && si < sharps) return 1;
+      return 0;
+    }
+    if(flats > 0){
+      var fi = FLAT_LETTERS.indexOf(letterChar);
+      if(fi >= 0 && fi < flats) return -1;
+      return 0;
+    }
+    return 0;
+  }
+
+  function diatonicScaleSpellings(tonicLetterIdx, sharps, flats){
+    var arr = [];
+    for(var i=0;i<7;i++){
+      var li = (tonicLetterIdx + i) % 7;
+      var off = keySignatureOffsetForLetter(LETTERS[li], sharps, flats);
+      arr.push({ letterIdx: li, offset: off, pc: pitchClassOf(li, off), name: germanName(li, off) });
+    }
+    return arr;
+  }
+
+  /* ============ Zustand ============ */
+  var state = {
+    tab: 'piano',
+    clef: 'treble',
+    accidental: 'auto',   // 'auto' | -2 | -1 | 0 | 1 | 2
+    entries: [],          // {id, midi, letterIdx, offset, octave, source}
+    sequence: [],          // [{id, midis:[...]}]
+    key: { sharps: 0, flats: 0, mode: null, tonicLetterIdx: null, tonicOffset: null, tonicPc: null, name: null }
+  };
+  var nextId = 1;
+
+  function keyPrefersFlats(){ return state.key.flats > 0; }
+
+  function currentScaleSpellings(){
+    if(state.key.mode === null) return null;
+    return diatonicScaleSpellings(state.key.tonicLetterIdx, state.key.sharps, state.key.flats);
+  }
+
+  function rootSpellingFor(pc){
+    var scale = currentScaleSpellings();
+    if(scale){
+      for(var i=0;i<scale.length;i++){ if(scale[i].pc === pc) return scale[i]; }
+      // Chromatischer (nicht-diatonischer) Akkord in einer feststehenden Tonart:
+      // Zwischendominanten & entlehnte Akkorde werden im deutschen Schulunterricht
+      // ganz überwiegend mit b-Vorzeichen notiert (z. B. Neapolitaner).
+      return chooseSpelling(pc, true);
+    }
+    return chooseSpelling(pc, keyPrefersFlats());
+  }
+
+  /* ============ Akkord-Erkennung ============ */
+  var TEMPLATES = [
+    { key:'dur',      intervals:[0,4,7],      base:'Dur' },
+    { key:'moll',     intervals:[0,3,7],      base:'Moll' },
+    { key:'vermindert', intervals:[0,3,6],    base:'vermindert' },
+    { key:'uebermaessig', intervals:[0,4,8],  base:'uebermaessig' },
+    { key:'dom7',     intervals:[0,4,7,10],   base:'Dur' },
+    { key:'maj7',     intervals:[0,4,7,11],   base:'Dur' },
+    { key:'min7',     intervals:[0,3,7,10],   base:'Moll' },
+    { key:'m7b5',     intervals:[0,3,6,10],   base:'vermindert' },
+    { key:'dim7',     intervals:[0,3,6,9],    base:'vermindert' },
+    { key:'minMaj7',  intervals:[0,3,7,11],   base:'Moll' },
+    { key:'aug7',     intervals:[0,4,8,10],   base:'uebermaessig' }
+  ];
+
+  var INTERVAL_NAMES = ['Prime (Einklang)','kleine Sekunde','große Sekunde','kleine Terz','große Terz',
+    'reine Quarte','Tritonus (üm. Quarte / verm. Quinte)','reine Quinte','kleine Sexte','große Sexte',
+    'kleine Septime','große Septime'];
+
+  function arraysEqual(a,b){
+    if(a.length !== b.length) return false;
+    for(var i=0;i<a.length;i++){ if(a[i] !== b[i]) return false; }
+    return true;
+  }
+
+  function identifyChord(midiList){
+    var uniq = {};
+    midiList.forEach(function(m){ uniq[mod12(m)] = true; });
+    var pcs = Object.keys(uniq).map(Number);
+    var bassMidi = Math.min.apply(null, midiList);
+    var bassPc = mod12(bassMidi);
+
+    if(pcs.length < 2){
+      return { kind:'insufficient', count: pcs.length };
+    }
+    if(pcs.length === 2){
+      var iv = mod12(pcs[1] - pcs[0]);
+      var iv2 = mod12(pcs[0] - pcs[1]);
+      var use = Math.min(iv, iv2);
+      return { kind:'interval', name: INTERVAL_NAMES[use] };
+    }
+
+    var candidates = [];
+    TEMPLATES.forEach(function(t){
+      if(t.intervals.length !== pcs.length) return;
+      pcs.forEach(function(root){
+        var ivs = pcs.map(function(pc){ return mod12(pc - root); }).sort(function(a,b){return a-b;});
+        var tmpl = t.intervals.slice().sort(function(a,b){return a-b;});
+        if(arraysEqual(ivs, tmpl)){
+          candidates.push({ root: root, template: t });
+        }
+      });
+    });
+
+    if(candidates.length === 0){
+      return { kind:'unrecognized', pcs: pcs };
+    }
+
+    var chosen = null;
+    if(candidates.length > 1 && state.key.mode !== null){
+      for(var i=0;i<candidates.length;i++){
+        var f = functionFor(candidates[i].root, candidates[i].template.base);
+        if(f.func && !f.weak){ chosen = candidates[i]; break; }
+      }
+    }
+    if(!chosen){
+      for(i=0;i<candidates.length;i++){ if(candidates[i].root === bassPc){ chosen = candidates[i]; break; } }
+    }
+    if(!chosen) chosen = candidates[0];
+
+    var toneRoles = chosen.template.intervals.slice().sort(function(a,b){return a-b;})
+      .map(function(iv){ return mod12(chosen.root + iv); });
+    var bassRoleIdx = toneRoles.indexOf(bassPc);
+    var roleNames3 = ['Grundstellung','Sextakkord (1. Umkehrung)','Quartsextakkord (2. Umkehrung)'];
+    var roleNames4 = ['Grundstellung','Quintsextakkord (1. Umkehrung)','Terzquartakkord (2. Umkehrung)','Sekundakkord (3. Umkehrung)'];
+    var inversionLabel = (toneRoles.length === 3 ? roleNames3 : roleNames4)[bassRoleIdx >= 0 ? bassRoleIdx : 0];
+
+    var rootSpelling = rootSpellingFor(chosen.root);
+    var bassSpelling = rootSpellingFor(bassPc);
+
+    return {
+      kind:'chord',
+      root: chosen.root,
+      template: chosen.template,
+      rootSpelling: rootSpelling,
+      bassSpelling: bassSpelling,
+      inversionLabel: inversionLabel,
+      inversionIndex: bassRoleIdx,
+      bassPc: bassPc
+    };
+  }
+
+  function buildFullLabel(rootSpelling, templateKey){
+    var R = rootSpelling.name;
+    var r = lowerFirst(R);
+    switch(templateKey){
+      case 'dur': return R + '-Dur';
+      case 'moll': return r + '-Moll';
+      case 'vermindert': return r + '-vermindert (' + R + '°)';
+      case 'uebermaessig': return R + '-übermäßig (' + R + '+)';
+      case 'dom7': return R + '7 (Dominantseptakkord)';
+      case 'maj7': return R + 'maj7 (großer Durseptakkord)';
+      case 'min7': return r + '-Moll7 (Mollseptakkord)';
+      case 'm7b5': return r + 'ø7 (halbverminderter Septakkord)';
+      case 'dim7': return R + '°7 (verminderter Septakkord)';
+      case 'minMaj7': return r + '-Moll(maj7) (Moll-Dur-Septakkord)';
+      case 'aug7': return R + '7+ (übermäßiger Septakkord)';
+    }
+    return R;
+  }
+
+  function buildShortSymbol(rootSpelling, templateKey){
+    var R = rootSpelling.name;
+    var r = lowerFirst(R);
+    switch(templateKey){
+      case 'dur': return R;
+      case 'moll': return r;
+      case 'vermindert': return r + '°';
+      case 'uebermaessig': return R + '+';
+      case 'dom7': return R + '7';
+      case 'maj7': return R + 'maj7';
+      case 'min7': return r + '7';
+      case 'm7b5': return r + 'ø7';
+      case 'dim7': return r + '°7';
+      case 'minMaj7': return r + '(maj7)';
+      case 'aug7': return R + '7+';
+    }
+    return R;
+  }
+
+  /* ============ Funktionsharmonik ============ */
+  var DEGREE_FUNCS_DUR  = ['T','Sp','Dp','S','D','Tp','D7>'];
+  var DEGREE_FUNCS_MOLL = ['T','II°','Tp','S','D','Sp','Dp'];
+  var EXPECT_Q_DUR  = ['Dur','Moll','Moll','Dur','Dur','Moll','vermindert'];
+  var EXPECT_Q_MOLL = ['Moll','vermindert','Dur','Moll','Moll','Dur','Dur'];
+
+  function functionFor(rootPc, base){
+    if(state.key.mode === null) return { func:null, note:'' };
+    var scale = diatonicScaleSpellings(state.key.tonicLetterIdx, state.key.sharps, state.key.flats);
+    var idx = -1;
+    for(var i=0;i<7;i++){ if(scale[i].pc === rootPc){ idx = i; break; } }
+    var funcsArr = state.key.mode === 'dur' ? DEGREE_FUNCS_DUR : DEGREE_FUNCS_MOLL;
+    var expectArr = state.key.mode === 'dur' ? EXPECT_Q_DUR : EXPECT_Q_MOLL;
+
+    var directMatch = null;
+    if(idx >= 0){
+      var func = funcsArr[idx];
+      var expected = expectArr[idx];
+      var ok = (base === expected) || (idx === 4 && (base === 'Dur' || base === 'Moll'));
+      if(ok) return { func: func, note: '' };
+      // Wurzelton ist zwar eine Stammstufe, aber mit "falscher" Akkordqualität:
+      // erst prüfen, ob sich das als chromatische Umdeutung (Zwischendominante,
+      // Neapolitaner, Leitton-Doppelklang) sinnvoller erklären lässt.
+      directMatch = { func: func + '*', note: 'chromatisch verändert', weak: true };
+    }
+
+    if(state.key.mode === 'moll'){
+      var raised = mod12(state.key.tonicPc + 11);
+      if(rootPc === raised && base === 'vermindert'){
+        return { func:'D', note:'Leitton-Doppelklang aus harmonischem Moll (verkürzter D7)' };
+      }
+    }
+
+    if(base === 'Dur'){
+      for(i=0;i<7;i++){
+        if(i === 0) continue;
+        var targetPc = scale[i].pc;
+        var secRoot = mod12(targetPc + 7);
+        if(secRoot === rootPc){
+          var targetFunc = funcsArr[i];
+          var label = (targetFunc === 'D') ? 'DD' : ('D/' + targetFunc);
+          return { func: label, note: 'Zwischendominante (sekundäre Dominante zu ' + targetFunc + ')' };
+        }
+      }
+      if(rootPc === mod12(state.key.tonicPc + 1)){
+        return { func:'N', note:'Neapolitaner (bII), oft als Sextakkord "N6"' };
+      }
+    }
+
+    if(directMatch) return directMatch;
+    return { func:null, note:'nicht eindeutig diatonisch in dieser Tonart' };
+  }
+
+  function funcCssClass(func){
+    if(!func) return 'func-x';
+    if(func.indexOf('T') === 0 || func === 'Tp') return 'func-t';
+    if(func.indexOf('S') === 0 || func === 'Sp' || func === 'II°') return 'func-s';
+    if(func.indexOf('D') === 0 || func === 'Dp' || func === 'N') return 'func-d';
+    return 'func-x';
+  }
+
+  /* ============ Klaviatur ============ */
+  var PIANO_START_OCT = 3, PIANO_END_OCT = 6;
+  var WHITE_W = 34, WHITE_H = 132, BLACK_W = 21, BLACK_H = 84;
+
+  function buildPianoModel(){
+    var whites = [];
+    for(var o=PIANO_START_OCT;o<=PIANO_END_OCT;o++){
+      for(var li=0; li<7; li++){
+        if(o === PIANO_END_OCT && li > 0) break;
+        whites.push({ letterIdx: li, octave: o, wIndex: whites.length });
+      }
+    }
+    var blacks = [];
+    whites.forEach(function(w, idx){
+      if(idx === whites.length - 1) return;
+      var hasBlack = (LETTERS[w.letterIdx] === 'C' || LETTERS[w.letterIdx] === 'D' ||
+                      LETTERS[w.letterIdx] === 'F' || LETTERS[w.letterIdx] === 'G' || LETTERS[w.letterIdx] === 'A');
+      if(hasBlack) blacks.push({ afterIndex: idx, octave: w.octave });
+    });
+    return { whites: whites, blacks: blacks };
+  }
+
+  function findEntry(pred){
+    for(var i=0;i<state.entries.length;i++){ if(pred(state.entries[i])) return state.entries[i]; }
+    return null;
+  }
+  function removeEntryById(id){
+    state.entries = state.entries.filter(function(e){ return e.id !== id; });
+  }
+
+  function pianoDefaultSpelling(pc){
+    if(state.accidental !== 'auto'){
+      var opts = NOTE_SPELLINGS[pc];
+      for(var i=0;i<opts.length;i++){ if(opts[i].offset === state.accidental) return opts[i]; }
+    }
+    var scale = currentScaleSpellings();
+    if(scale){ for(i=0;i<scale.length;i++){ if(scale[i].pc === pc) return scale[i]; } }
+    return chooseSpelling(pc, keyPrefersFlats());
+  }
+
+  function renderPiano(){
+    var model = buildPianoModel();
+    var width = model.whites.length * WHITE_W + 4;
+    var svg = ['<svg width="', width, '" height="', WHITE_H + 22, '" viewBox="0 0 ', width, ' ', WHITE_H + 22, '">'];
+
+    var activeMidis = {};
+    state.entries.forEach(function(e){ if(e.source === 'piano') activeMidis[e.midi] = true; });
+
+    model.whites.forEach(function(w){
+      var pc = pitchClassOf(w.letterIdx, 0);
+      var midi = midiFor(w.letterIdx, w.octave, 0);
+      var isActive = !!activeMidis[midi];
+      var x = w.wIndex * WHITE_W + 2;
+      var names = NOTE_SPELLINGS[pc];
+      svg.push('<g class="key white', isActive ? ' active':'', '" data-kind="white" data-midi="', midi,
+        '" data-letter="', w.letterIdx, '" data-octave="', w.octave, '">');
+      svg.push('<rect x="', x, '" y="0" width="', WHITE_W-2, '" height="', WHITE_H, '" rx="3" data-role="body"></rect>');
+      names.forEach(function(n, ni){
+        svg.push('<text x="', x + (WHITE_W-2)/2, '" y="', WHITE_H - 10 - (names.length-1-ni)*10,
+          '" text-anchor="middle" data-role="label" data-spell-letter="', n.letterIdx, '" data-spell-offset="', n.offset, '">', n.name, '</text>');
+      });
+      svg.push('</g>');
+      if(LETTERS[w.letterIdx] === 'C'){
+        svg.push('<text class="octave-label" x="', x + (WHITE_W-2)/2, '" y="', WHITE_H + 14, '" text-anchor="middle">C', w.octave, '</text>');
+      }
+    });
+
+    model.blacks.forEach(function(b){
+      var w = model.whites[b.afterIndex];
+      var pc = mod12(pitchClassOf(w.letterIdx, 0) + 1);
+      var midi = midiFor(w.letterIdx, w.octave, 1);
+      var isActive = !!activeMidis[midi];
+      var x = (b.afterIndex + 1) * WHITE_W + 2 - BLACK_W/2;
+      var names = NOTE_SPELLINGS[pc];
+      svg.push('<g class="key black', isActive ? ' active':'', '" data-kind="black" data-midi="', midi,
+        '" data-letter="', w.letterIdx, '" data-octave="', w.octave, '">');
+      svg.push('<rect x="', x, '" y="0" width="', BLACK_W, '" height="', BLACK_H, '" rx="2" data-role="body"></rect>');
+      names.forEach(function(n, ni){
+        svg.push('<text x="', x + BLACK_W/2, '" y="', BLACK_H - 10 - (names.length-1-ni)*10,
+          '" text-anchor="middle" data-role="label" data-spell-letter="', n.letterIdx, '" data-spell-offset="', n.offset, '">', n.name, '</text>');
+      });
+      svg.push('</g>');
+    });
+
+    svg.push('</svg>');
+    var host = document.getElementById('pianoSvgHost');
+    host.innerHTML = svg.join('');
+
+    host.querySelectorAll('.key').forEach(function(g){
+      var midiBase = parseInt(g.getAttribute('data-midi'), 10);
+      var letterIdx = parseInt(g.getAttribute('data-letter'), 10);
+      var octave = parseInt(g.getAttribute('data-octave'), 10);
+      var kind = g.getAttribute('data-kind');
+
+      g.querySelectorAll('[data-role="label"]').forEach(function(t){
+        t.addEventListener('click', function(ev){
+          ev.stopPropagation();
+          var sLetter = parseInt(t.getAttribute('data-spell-letter'),10);
+          var sOffset = parseInt(t.getAttribute('data-spell-offset'),10);
+          var baseMidi = kind === 'white' ? midiFor(letterIdx, octave, 0) : midiFor(letterIdx, octave, 1);
+          var existing = findEntry(function(e){ return e.source==='piano' && e.midi===baseMidi; });
+          if(existing){ removeEntryById(existing.id); }
+          else { addPianoEntry(sLetter, sOffset, octave, kind, letterIdx); }
+          update();
+        });
+      });
+
+      var body = g.querySelector('[data-role="body"]');
+      body.addEventListener('click', function(){
+        var pc = kind === 'white' ? pitchClassOf(letterIdx,0) : mod12(pitchClassOf(letterIdx,0)+1);
+        var existing = findEntry(function(e){ return e.source==='piano' && e.midi===midiBase; });
+        if(existing){ removeEntryById(existing.id); update(); return; }
+        var spelling = pianoDefaultSpelling(pc);
+        addPianoEntry(spelling.letterIdx, spelling.offset, octave, kind, letterIdx);
+        update();
+      });
+    });
+  }
+
+  function addPianoEntry(letterIdx, offset, whiteOctave, kind, whiteLetterIdx){
+    // Oktave korrekt bestimmen: für schwarze Taste kann Oktave je nach Enharmonik abweichen (z.B. His am Oktavwechsel)
+    var pc = pitchClassOf(letterIdx, offset);
+    // Ausgangspunkt: MIDI der angeklickten Taste
+    var baseMidi = kind === 'white' ? midiFor(whiteLetterIdx, whiteOctave, 0) : midiFor(whiteLetterIdx, whiteOctave, 1);
+    // Finde Oktave, sodass midiFor(letterIdx,octave,offset) === baseMidi
+    var octave = whiteOctave;
+    for(var d=-1; d<=1; d++){
+      if(midiFor(letterIdx, whiteOctave + d, offset) === baseMidi){ octave = whiteOctave + d; break; }
+    }
+    state.entries.push({ id: nextId++, midi: baseMidi, letterIdx: letterIdx, offset: offset, octave: octave, source: 'piano' });
+  }
+
+  /* ============ Notenzeile ============ */
+  var CLEFS = {
+    treble: { bottomLetterIdx: LETTERS.indexOf('E'), bottomOctave: 4, glyph: '𝄞', label: 'Violinschlüssel' },
+    bass:   { bottomLetterIdx: LETTERS.indexOf('G'), bottomOctave: 2, glyph: '𝄢', label: 'Bassschlüssel' },
+    alto:   { bottomLetterIdx: LETTERS.indexOf('F'), bottomOctave: 3, glyph: '𝄡', label: 'C-Schlüssel (Bratsche)' }
+  };
+
+  function staffSlotInfo(clefKey, slot){
+    var clef = CLEFS[clefKey];
+    var li = clef.bottomLetterIdx + slot;
+    var octave = clef.bottomOctave + Math.floor(li / 7);
+    li = ((li % 7) + 7) % 7;
+    return { letterIdx: li, octave: octave };
+  }
+
+  function ledgerSlotsFor(slot){
+    var arr = [];
+    if(slot > 8){ for(var s=10;s<=slot;s+=2) arr.push(s); }
+    else if(slot < 0){ for(var s2=-2;s2>=slot;s2-=2) arr.push(s2); }
+    return arr;
+  }
+
+  function staffAccidentalOffset(letterChar){
+    if(state.accidental !== 'auto') return { offset: state.accidental, explicit:true };
+    return { offset: keySignatureOffsetForLetter(letterChar, state.key.sharps, state.key.flats), explicit:false };
+  }
+
+  var STAFF_LINE_GAP = 10;
+  var STAFF_MIN_SLOT = -7, STAFF_MAX_SLOT = 15;
+  var STAFF_COL_X = 96;
+
+  function renderOneStaff(host, clefKey, baseY, opts){
+    var clef = CLEFS[clefKey];
+    var lineGap = STAFF_LINE_GAP;
+    var minSlot = STAFF_MIN_SLOT, maxSlot = STAFF_MAX_SLOT;
+    var x0 = opts.x0, width = opts.width;
+    var colX = x0 + STAFF_COL_X;
+    var svg = [];
+
+    // 5 Linien
+    for(var l=0; l<=8; l+=2){
+      var y = baseY - l*(lineGap/2);
+      svg.push('<line class="staffline" x1="', x0, '" y1="', y, '" x2="', x0+width, '" y2="', y, '"></line>');
+    }
+    // Schlüssel
+    var clefY = clefKey === 'bass' ? baseY - lineGap + 4 : (clefKey === 'alto' ? baseY - 2*lineGap : baseY + lineGap + 6);
+    var clefSize = clefKey === 'treble' ? 50 : 32;
+    svg.push('<text class="clef-glyph" x="', x0+6, '" y="', clefY, '" font-size="', clefSize, '">', clef.glyph, '</text>');
+    svg.push('<text class="staff-caption" x="', x0+width-4, '" y="', baseY - 8*lineGap/2 - 8, '" text-anchor="end">', clef.label, '</text>');
+
+    var activeForStaff = {};
+    state.entries.forEach(function(e){
+      if(e.source === ('staff-'+clefKey)) activeForStaff[e.slot] = e;
+    });
+
+    // dezente Führungspunkte an allen anwählbaren Positionen
+    for(var g = minSlot; g <= maxSlot; g++){
+      var gy = baseY - g*(lineGap/2);
+      svg.push('<circle cx="', colX, '" cy="', gy, '" r="1.3" fill="var(--line-strong)" opacity=".7"></circle>');
+    }
+
+    // Notenköpfe + Hilfslinien nur für tatsächlich aktive Töne
+    Object.keys(activeForStaff).forEach(function(slotKey){
+      var s = parseInt(slotKey, 10);
+      var active = activeForStaff[s];
+      var y2 = baseY - s*(lineGap/2);
+      ledgerSlotsFor(s).forEach(function(ls){
+        var ly = baseY - ls*(lineGap/2);
+        svg.push('<line class="ledger" x1="', colX-9, '" y1="', ly, '" x2="', colX+9, '" y2="', ly, '"></line>');
+      });
+      svg.push('<g class="staff-note-slot active" data-clef="', clefKey, '" data-slot="', s, '">');
+      svg.push('<ellipse class="head" cx="', colX, '" cy="', y2, '" rx="5.6" ry="4.2" transform="rotate(-18 ', colX, ' ', y2, ')"></ellipse>');
+      if(active.explicit){
+        var sym = active.offset===2?'𝄪':active.offset===1?'♯':active.offset===0?'♮':active.offset===-1?'♭':'𝄫';
+        svg.push('<text class="acc" x="', colX-13, '" y="', y2+4, '" text-anchor="end">', sym, '</text>');
+      }
+      svg.push('</g>');
+    });
+
+    // eine große, unsichtbare Klickspalte: Klick springt zur nächstgelegenen Notenposition
+    var topY = baseY - maxSlot*(lineGap/2) - 8;
+    var bottomY = baseY - minSlot*(lineGap/2) + 8;
+    svg.push('<rect class="staff-click-col" data-clef="', clefKey, '" data-basey="', baseY, '" data-lgap="', lineGap,
+      '" data-minslot="', minSlot, '" data-maxslot="', maxSlot,
+      '" x="', colX-11, '" y="', topY, '" width="22" height="', bottomY-topY, '" fill="transparent" style="cursor:pointer;"></rect>');
+
+    host.push(svg.join(''));
+  }
+
+  function renderStaff(){
+    var host = document.getElementById('staffSvgHost');
+    var clefsToShow = state.clef === 'all' ? ['treble','alto','bass'] : [state.clef];
+    var width = 300;
+    var half = STAFF_LINE_GAP/2;
+    var topPad = 10, bottomPad = 10, interGap = 14;
+    var topMargin = STAFF_MAX_SLOT*half + topPad;      // Platz oberhalb von baseY
+    var bottomMargin = -STAFF_MIN_SLOT*half + bottomPad; // Platz unterhalb von baseY
+    var staffBlock = topMargin + bottomMargin + interGap;
+    var firstBaseY = topMargin;
+    var height = firstBaseY + (clefsToShow.length-1)*staffBlock + bottomMargin;
+    var full = ['<svg width="', width, '" height="', height, '" viewBox="0 0 ', width, ' ', height, '">'];
+    clefsToShow.forEach(function(ck, i){
+      var baseY = firstBaseY + i*staffBlock;
+      renderOneStaff(full, ck, baseY, { x0: 4, width: width-8 });
+    });
+    full.push('</svg>');
+    host.innerHTML = full.join('');
+
+    host.querySelectorAll('.staff-click-col').forEach(function(rect){
+      rect.addEventListener('click', function(ev){
+        var clefKey = rect.getAttribute('data-clef');
+        var baseYv = parseFloat(rect.getAttribute('data-basey'));
+        var lgap = parseFloat(rect.getAttribute('data-lgap'));
+        var minS = parseInt(rect.getAttribute('data-minslot'),10);
+        var maxS = parseInt(rect.getAttribute('data-maxslot'),10);
+        var pt = svgPointFromEvent(rect, ev);
+        var slot = Math.round((baseYv - pt.y) / (lgap/2));
+        if(slot < minS) slot = minS;
+        if(slot > maxS) slot = maxS;
+        var info = staffSlotInfo(clefKey, slot);
+        var source = 'staff-'+clefKey;
+        var existing = findEntry(function(e){ return e.source===source && e.slot===slot; });
+        if(existing){ removeEntryById(existing.id); update(); return; }
+        var acc = staffAccidentalOffset(LETTERS[info.letterIdx]);
+        state.entries.push({ id: nextId++, midi: midiFor(info.letterIdx, info.octave, acc.offset), letterIdx: info.letterIdx,
+          offset: acc.offset, octave: info.octave, source: source, slot: slot, explicit: acc.explicit });
+        update();
+      });
+    });
+  }
+
+  function svgPointFromEvent(el, ev){
+    var svg = el.ownerSVGElement;
+    var pt = svg.createSVGPoint();
+    pt.x = ev.clientX; pt.y = ev.clientY;
+    var ctm = el.getScreenCTM().inverse();
+    return pt.matrixTransform(ctm);
+  }
+
+  /* ============ Chips ============ */
+  function renderChips(){
+    var host = document.getElementById('chipRow');
+    if(state.entries.length === 0){
+      host.innerHTML = '<span class="empty-note">Noch keine Töne gewählt.</span>';
+      return;
+    }
+    var sorted = state.entries.slice().sort(function(a,b){ return a.midi - b.midi; });
+    host.innerHTML = sorted.map(function(e){
+      return '<span class="chip">' + germanName(e.letterIdx, e.offset) + '<sub style="font-size:.68em;">' + e.octave + '</sub>' +
+        '<button data-id="'+e.id+'" title="entfernen">&times;</button></span>';
+    }).join('');
+    host.querySelectorAll('button[data-id]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        removeEntryById(parseInt(btn.getAttribute('data-id'),10));
+        update();
+      });
+    });
+  }
+
+  /* ============ Erkannter Akkord ============ */
+  function currentMidiList(){ return state.entries.map(function(e){ return e.midi; }); }
+
+  function renderReadout(){
+    var host = document.getElementById('chordReadout');
+    var addBtn = document.getElementById('addToSequenceBtn');
+    var midis = currentMidiList();
+    if(midis.length === 0){
+      host.innerHTML = '<span class="empty-note">Wähle mindestens zwei Töne, um eine Analyse zu erhalten.</span>';
+      addBtn.disabled = true;
+      return;
+    }
+    var result = identifyChord(midis);
+    addBtn.disabled = false;
+
+    if(result.kind === 'insufficient'){
+      host.innerHTML = '<span class="empty-note">Nur ein Ton gewählt &ndash; das ergibt noch keinen Akkord.</span>';
+      return;
+    }
+    if(result.kind === 'interval'){
+      host.innerHTML = '<div class="name">' + result.name + '</div><div class="sub">Zwei Töne bilden ein Intervall, noch keinen Akkord. Füge einen dritten Ton hinzu.</div>';
+      return;
+    }
+    if(result.kind === 'unrecognized'){
+      host.innerHTML = '<div class="name">nicht eindeutig bestimmbar</div><div class="sub">Diese Tonkombination entspricht keinem gängigen Dreiklang oder Septakkord (evtl. Vorhalt, Cluster oder mehrdeutige Töne).</div>';
+      return;
+    }
+
+    var label = buildFullLabel(result.rootSpelling, result.template.key);
+    var html = '<div class="name">' + label + '</div>';
+    var subParts = [];
+    if(result.inversionIndex > 0){ subParts.push('Basston: ' + germanName(result.bassSpelling.letterIdx, result.bassSpelling.offset)); }
+    if(subParts.length) html += '<div class="sub">' + subParts.join(' &middot; ') + '</div>';
+    html += '<div class="symbol">Akkordsymbol: ' + buildShortSymbol(result.rootSpelling, result.template.key) + '</div>';
+
+    if(state.key.mode !== null){
+      var f = functionFor(result.root, result.template.base);
+      if(f.func){
+        html += '<div style="margin-top:6px;"><span class="func-badge ' + funcCssClass(f.func) + '">' + f.func + '</span>' +
+          (f.note ? ' <span class="hint">' + f.note + '</span>' : '') + '</div>';
+      } else {
+        html += '<div style="margin-top:6px;"><span class="func-badge func-x">?</span> <span class="hint">' + f.note + '</span></div>';
+      }
+    }
+    host.innerHTML = html;
+  }
+
+  /* ============ Tonart-Panel ============ */
+  function selectAccidentalCount(sharps, flats){
+    state.key.sharps = sharps;
+    state.key.flats = flats;
+    state.key.mode = null; state.key.tonicLetterIdx = null; state.key.tonicPc = null; state.key.name = null;
+    update();
+  }
+
+  function renderKeyPanel(){
+    var noneHost = document.getElementById('noAccidentalRow');
+    var noneActive = state.key.sharps === 0 && state.key.flats === 0;
+    noneHost.innerHTML = '<button class="keysig-thumb' + (noneActive ? ' active' : '') + '" id="noAccBtn">' +
+      renderKeySigThumb(0, 'sharp') + '<span class="cap">ohne Vorzeichen<br>C-Dur / a-Moll</span></button>';
+    document.getElementById('noAccBtn').addEventListener('click', function(){ selectAccidentalCount(0, 0); });
+
+    var sharpHost = document.getElementById('sharpThumbRow');
+    sharpHost.innerHTML = SHARP_ORDER.map(function(n, i){
+      var count = i + 1;
+      var active = state.key.sharps === count;
+      var names = SHARP_ORDER.slice(0, count).join(' ');
+      return '<button class="keysig-thumb' + (active ? ' active' : '') + '" data-count="' + count + '">' +
+        renderKeySigThumb(count, 'sharp') + '<span class="cap">' + count + ' ♯<br>' + names + '</span></button>';
+    }).join('');
+    sharpHost.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        selectAccidentalCount(parseInt(btn.getAttribute('data-count'),10), 0);
+      });
+    });
+
+    var flatHost = document.getElementById('flatThumbRow');
+    flatHost.innerHTML = FLAT_ORDER.map(function(n, i){
+      var count = i + 1;
+      var active = state.key.flats === count;
+      var names = FLAT_ORDER.slice(0, count).join(' ');
+      return '<button class="keysig-thumb' + (active ? ' active' : '') + '" data-count="' + count + '">' +
+        renderKeySigThumb(count, 'flat') + '<span class="cap">' + count + ' ♭<br>' + names + '</span></button>';
+    }).join('');
+    flatHost.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        selectAccidentalCount(0, parseInt(btn.getAttribute('data-count'),10));
+      });
+    });
+
+    document.getElementById('staffKeysigBadge').textContent =
+      state.key.sharps > 0 ? (state.key.sharps + ' ♯ (' + SHARP_ORDER.slice(0,state.key.sharps).join(', ') + ')') :
+      state.key.flats > 0 ? (state.key.flats + ' ♭ (' + FLAT_ORDER.slice(0,state.key.flats).join(', ') + ')') :
+      'keine Vorzeichen';
+
+    var majorName = state.key.flats > 0 ? MAJOR_NAME_BY_FLATS[state.key.flats] : MAJOR_NAME_BY_SHARPS[state.key.sharps];
+    var minorName = state.key.flats > 0 ? MINOR_NAME_BY_FLATS[state.key.flats] : MINOR_NAME_BY_SHARPS[state.key.sharps];
+    var majorP = parseGermanName(majorName);
+    var minorP = parseGermanName(minorName);
+
+    // Schlusston-Auswahl füllen
+    var sel = document.getElementById('finalNoteSelect');
+    var prevVal = sel.value;
+    var opts = ['<option value="">&ndash; wählen &ndash;</option>'];
+    for(var pc=0; pc<12; pc++){
+      var sp = chooseSpelling(pc, keyPrefersFlats());
+      opts.push('<option value="' + pc + '">' + sp.name + '</option>');
+    }
+    sel.innerHTML = opts.join('');
+    sel.value = prevVal;
+
+    var candHost = document.getElementById('keyCandidates');
+    candHost.innerHTML =
+      '<div class="key-candidate' + (state.key.mode==='dur'?' chosen':'') + '" data-mode="dur">' + majorName + '-Dur</div>' +
+      '<div class="key-candidate' + (state.key.mode==='moll'?' chosen':'') + '" data-mode="moll">' + minorName + '-Moll</div>';
+    candHost.querySelectorAll('.key-candidate').forEach(function(el){
+      el.addEventListener('click', function(){
+        var mode = el.getAttribute('data-mode');
+        state.key.mode = mode;
+        if(mode === 'dur'){ state.key.tonicLetterIdx = majorP.letterIdx; state.key.tonicOffset = majorP.offset; state.key.tonicPc = pitchClassOf(majorP.letterIdx, majorP.offset); state.key.name = majorName + '-Dur'; }
+        else { state.key.tonicLetterIdx = minorP.letterIdx; state.key.tonicOffset = minorP.offset; state.key.tonicPc = pitchClassOf(minorP.letterIdx, minorP.offset); state.key.name = minorName + '-Moll'; }
+        update();
+      });
+    });
+
+    var banner = document.getElementById('activeKeyBanner');
+    if(state.key.mode){
+      banner.innerHTML = '<div class="active-key-banner">aktive Tonart: ' + state.key.name + '</div>';
+    } else {
+      var finalVal = sel.value;
+      var msg = 'Noch keine Tonart bestätigt.';
+      if(finalVal !== ''){
+        var fpc = parseInt(finalVal,10);
+        if(fpc === pitchClassOf(majorP.letterIdx, majorP.offset)) msg += ' Schlusston passt zu ' + majorName + '-Dur.';
+        else if(fpc === pitchClassOf(minorP.letterIdx, minorP.offset)) msg += ' Schlusston passt zu ' + minorName + '-Moll.';
+        else msg += ' Schlusston passt zu keiner der beiden Optionen &ndash; bitte manuell wählen.';
+      }
+      banner.innerHTML = '<div class="hint">' + msg + '</div>';
+    }
+
+    sel.onchange = function(){ renderKeyPanel(); };
+  }
+
+  /* ============ Akkordfolge ============ */
+  function renderSequence(){
+    var host = document.getElementById('sequenceHost');
+    if(state.sequence.length === 0){
+      host.innerHTML = '<span class="empty-note">Noch keine Akkorde in der Folge.</span>';
+      return;
+    }
+    var parts = [];
+    var prevFunc = null;
+    state.sequence.forEach(function(item, idx){
+      var result = identifyChord(item.midis);
+      var sym = '?', func = null;
+      if(result.kind === 'chord'){
+        sym = buildShortSymbol(result.rootSpelling, result.template.key);
+        if(state.key.mode !== null){ func = functionFor(result.root, result.template.base).func; }
+      } else if(result.kind === 'interval'){ sym = result.name; }
+
+      if(idx > 0){
+        var cadence = '';
+        if(prevFunc && func){
+          if(prevFunc === 'D' && func === 'T') cadence = 'Ganzschluss';
+          else if(prevFunc === 'D' && func !== 'T' && func !== 'D') cadence = 'Trugschluss';
+          else if(prevFunc === 'S' && func === 'T') cadence = 'Plagalschluss';
+          else if(func === 'D') cadence = '→ Dominante';
+        }
+        parts.push('<div class="seq-arrow">&rarr;' + (cadence ? '<span class="cadence">'+cadence+'</span>' : '') + '</div>');
+      }
+      parts.push('<div class="seq-card"><div class="sym">' + sym + '</div>' +
+        (func ? '<span class="func-badge ' + funcCssClass(func) + '">' + func + '</span>' : '') +
+        '<button class="del" data-idx="' + idx + '" title="entfernen">&times;</button></div>');
+      prevFunc = func;
+    });
+    host.innerHTML = parts.join('');
+    host.querySelectorAll('.del').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = parseInt(btn.getAttribute('data-idx'),10);
+        state.sequence.splice(idx,1);
+        update();
+      });
+    });
+  }
+
+  /* ============ Update / Wiring ============ */
+  function update(){
+    renderPiano();
+    renderStaff();
+    renderChips();
+    renderReadout();
+    renderKeyPanel();
+    renderSequence();
+  }
+
+  document.getElementById('inputTabbar').querySelectorAll('button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state.tab = btn.getAttribute('data-tab');
+      document.getElementById('inputTabbar').querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      document.getElementById('pianoPane').style.display = state.tab==='piano' ? '' : 'none';
+      document.getElementById('staffPane').style.display = state.tab==='staff' ? '' : 'none';
+    });
+  });
+
+  document.getElementById('clefChooser').querySelectorAll('button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state.clef = btn.getAttribute('data-clef');
+      document.getElementById('clefChooser').querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      renderStaff();
+    });
+  });
+
+  document.getElementById('accidentalToolbar').querySelectorAll('button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var val = btn.getAttribute('data-acc');
+      state.accidental = val === 'auto' ? 'auto' : parseInt(val,10);
+      document.getElementById('accidentalToolbar').querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b===btn); });
+    });
+  });
+
+  document.getElementById('clearAllBtn').addEventListener('click', function(){
+    state.entries = [];
+    update();
+  });
+
+  document.getElementById('addToSequenceBtn').addEventListener('click', function(){
+    var midis = currentMidiList();
+    if(midis.length === 0) return;
+    state.sequence.push({ id: nextId++, midis: midis.slice() });
+    state.entries = [];
+    update();
+  });
+
+  document.getElementById('resetSequenceBtn').addEventListener('click', function(){
+    state.sequence = [];
+    update();
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>
